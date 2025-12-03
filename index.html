@@ -1,10 +1,305 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>我的第一个网站</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我们的甜蜜时光 💘</title>
+    <style>
+        /* 全局样式：甜美可爱风 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei UI", "Comic Sans MS", 思源柔黑体, sans-serif;
+        }
+
+        body {
+            /* 渐变背景：奶油粉+浅紫 */
+            background: linear-gradient(120deg, #fff5f8 0%, #fce4ec 50%, #f3e5f5 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* 装饰爱心（随机漂浮） */
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ff69b4;
+            transform: rotate(45deg);
+            opacity: 0.7;
+            animation: float 8s infinite ease-in-out;
+            z-index: 0;
+        }
+        .heart::before, .heart::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ff69b4;
+            border-radius: 50%;
+        }
+        .heart::before {
+            top: -10px;
+            left: 0;
+        }
+        .heart::after {
+            top: 0;
+            left: -10px;
+        }
+        @keyframes float {
+            0% {
+                transform: rotate(45deg) translate(0, 0) scale(0.8);
+            }
+            50% {
+                transform: rotate(45deg) translate(20px, -30px) scale(1);
+            }
+            100% {
+                transform: rotate(45deg) translate(0, 0) scale(0.8);
+            }
+        }
+
+        /* 主卡片（软乎乎的圆角+阴影） */
+        .card {
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(255, 105, 180, 0.2);
+            padding: 40px 20px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 标题样式 */
+        h1 {
+            color: #e91e63;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(255, 105, 180, 0.3);
+        }
+        .subtitle {
+            color: #ff80ab;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        /* 计时核心区域 */
+        .time-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+        .time-box {
+            background: linear-gradient(180deg, #ffc1e9 0%, #ff80ab 100%);
+            color: white;
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(255, 105, 180, 0.3);
+            transition: transform 0.3s ease;
+        }
+        .time-box:hover {
+            transform: scale(1.08);
+        }
+        .time-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        .time-text {
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        /* 甜蜜语录区 */
+        .sweet-words {
+            margin: 30px 0;
+            padding: 20px;
+            background: #fff0f6;
+            border-radius: 16px;
+            border: 2px dashed #ffc2e2;
+        }
+        .sweet-words p {
+            color: #d81b60;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* 照片展示区 */
+        .photos {
+            margin: 30px 0;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .photo-item {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 3px solid #ffd6e0;
+            transition: transform 0.3s ease;
+        }
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .photo-item:hover {
+            transform: scale(1.1);
+        }
+
+        /* 底部小彩蛋 */
+        .footer {
+            margin-top: 30px;
+            color: #ff80ab;
+            font-size: 0.9rem;
+        }
+
+        /* 适配手机 */
+        @media (max-width: 500px) {
+            .time-box {
+                width: 70px;
+                height: 70px;
+            }
+            .time-number {
+                font-size: 1.5rem;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello World!</h1>
-    <p>这是我在GitHub Pages上的第一个网站</p>
+    <!-- 随机漂浮爱心（装饰） -->
+    <div class="heart" style="top: 10%; left: 10%; animation-delay: 0s;"></div>
+    <div class="heart" style="top: 20%; left: 80%; animation-delay: 1s;"></div>
+    <div class="heart" style="top: 70%; left: 20%; animation-delay: 2s;"></div>
+    <div class="heart" style="top: 80%; left: 70%; animation-delay: 3s;"></div>
+    <div class="heart" style="top: 40%; left: 50%; animation-delay: 4s;"></div>
+
+    <!-- 主卡片 -->
+    <div class="card">
+        <h1>✨ 我们的甜蜜时光 ✨</h1>
+        <p class="subtitle">从相遇的那一刻，爱意就开始倒计时啦 💘</p>
+
+        <!-- 核心计时区 -->
+        <div class="time-container">
+            <div class="time-box">
+                <span class="time-number" id="years">0</span>
+                <span class="time-text">年</span>
+            </div>
+            <div class="time-box">
+                <span class="time-number" id="months">0</span>
+                <span class="time-text">月</span>
+            </div>
+            <div class="time-box">
+                <span class="time-number" id="days">0</span>
+                <span class="time-text">日</span>
+            </div>
+            <div class="time-box">
+                <span class="time-number" id="hours">0</span>
+                <span class="time-text">时</span>
+            </div>
+            <div class="time-box">
+                <span class="time-number" id="minutes">0</span>
+                <span class="time-text">分</span>
+            </div>
+            <div class="time-box">
+                <span class="time-number" id="seconds">0</span>
+                <span class="time-text">秒</span>
+            </div>
+        </div>
+
+        <!-- 甜蜜语录（可修改） -->
+        <div class="sweet-words">
+            <p>💓 写给宝贝：遇见你，是我最幸运的事～</p>
+            <p>💓 我们的故事，未完待续... 📖</p>
+        </div>
+
+        <!-- 照片展示区（替换成你们的合照链接） -->
+        <div class="photos">
+            <div class="photo-item">
+                <img src="https://picsum.photos/seed/love1/200/200" alt="我们的合照1">
+            </div>
+            <div class="photo-item">
+                <img src="https://picsum.photos/seed/love2/200/200" alt="我们的合照2">
+            </div>
+            <div class="photo-item">
+                <img src="https://picsum.photos/seed/love3/200/200" alt="我们的合照3">
+            </div>
+        </div>
+
+        <div class="footer">
+            爱你的每一天，都是限量版 💝
+        </div>
+    </div>
+
+    <script>
+        // 核心：修改这里的日期为你们在一起的第一天！！！
+        // 格式：年, 月-1, 日（比如2023年5月20日 → 2023, 4, 20）
+        const startDate = new Date(2023, 4, 20);
+
+        // 计算累计时间的函数
+        function calculateLoveTime() {
+            const now = new Date();
+            const diff = now - startDate; // 毫秒差
+
+            // 计算总秒数、分钟数、小时数、天数
+            const totalSeconds = Math.floor(diff / 1000);
+            const totalMinutes = Math.floor(totalSeconds / 60);
+            const totalHours = Math.floor(totalMinutes / 60);
+            const totalDays = Math.floor(totalHours / 24);
+
+            // 计算年、月（简易版：按1年=12月，1月=30天估算，更贴合情侣计时的直观感）
+            const years = Math.floor(totalDays / 365);
+            const remainingDaysAfterYears = totalDays % 365;
+            const months = Math.floor(remainingDaysAfterYears / 30);
+            const days = remainingDaysAfterYears % 30;
+
+            // 计算时、分、秒
+            const hours = Math.floor(totalHours % 24);
+            const minutes = Math.floor(totalMinutes % 60);
+            const seconds = Math.floor(totalSeconds % 60);
+
+            // 更新页面显示（补0，比如1秒→01秒）
+            document.getElementById('years').textContent = years.toString().padStart(2, '0');
+            document.getElementById('months').textContent = months.toString().padStart(2, '0');
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+
+        // 初始化+每秒更新
+        calculateLoveTime();
+        setInterval(calculateLoveTime, 1000);
+
+        // 点击页面随机生成爱心彩蛋
+        document.addEventListener('click', (e) => {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.style.left = `${e.clientX - 10}px`;
+            heart.style.top = `${e.clientY - 10}px`;
+            heart.style.animationDelay = `${Math.random() * 5}s`;
+            document.body.appendChild(heart);
+            // 3秒后移除爱心
+            setTimeout(() => heart.remove(), 3000);
+        });
+    </script>
 </body>
 </html>
