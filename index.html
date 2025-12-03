@@ -25,6 +25,91 @@
             overflow-x: hidden;
         }
 
+        /* 登录遮罩层（默认显示，覆盖整个页面） */
+        .login-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(120deg, #fff5f8 0%, #fce4ec 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999; /* 最高层级，盖住所有内容 */
+        }
+
+        /* 登录卡片 */
+        .login-card {
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(255, 105, 180, 0.2);
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-card h2 {
+            color: #e91e63;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(255, 105, 180, 0.2);
+        }
+
+        .login-card p {
+            color: #ff80ab;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        /* 密码输入框 */
+        .password-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 3px solid #ffd6e0;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            color: #d81b60;
+            background: #fff0f6;
+            outline: none;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .password-input:focus {
+            border-color: #ff80ab;
+            box-shadow: 0 0 10px rgba(255, 128, 171, 0.3);
+        }
+
+        /* 登录按钮 */
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(180deg, #ffc1e9 0%, #ff80ab 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 105, 180, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(180deg, #ff80ab 0%, #e91e63 100%);
+        }
+
+        /* 错误提示 */
+        .error-tip {
+            color: #e91e63;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            display: none; /* 默认隐藏 */
+        }
+
         /* 装饰爱心（随机漂浮） */
         .heart {
             position: absolute;
@@ -75,6 +160,7 @@
             text-align: center;
             position: relative;
             z-index: 1;
+            display: none; /* 默认隐藏，登录后显示 */
         }
 
         /* 标题样式 */
@@ -181,10 +267,24 @@
             h1 {
                 font-size: 1.8rem;
             }
+            .login-card {
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- 登录遮罩层（默认显示） -->
+    <div class="login-mask" id="loginMask">
+        <div class="login-card">
+            <h2>🔐 专属甜蜜入口</h2>
+            <p>输入密码即可解锁我们的时光～</p>
+            <input type="password" class="password-input" id="passwordInput" placeholder="请输入访问密码">
+            <button class="login-btn" id="loginBtn">解锁甜蜜时光 💘</button>
+            <div class="error-tip" id="errorTip">密码错误啦～再试试❤️</div>
+        </div>
+    </div>
+
     <!-- 随机漂浮爱心（装饰） -->
     <div class="heart" style="top: 10%; left: 10%; animation-delay: 0s;"></div>
     <div class="heart" style="top: 20%; left: 80%; animation-delay: 1s;"></div>
@@ -192,8 +292,8 @@
     <div class="heart" style="top: 80%; left: 70%; animation-delay: 3s;"></div>
     <div class="heart" style="top: 40%; left: 50%; animation-delay: 4s;"></div>
 
-    <!-- 主卡片 -->
-    <div class="card">
+    <!-- 主卡片（默认隐藏） -->
+    <div class="card" id="mainCard">
         <h1>✨ 我们的甜蜜时光 ✨</h1>
         <p class="subtitle">从相遇的那一刻，爱意就开始倒计时啦 💘</p>
 
@@ -250,9 +350,84 @@
     </div>
 
     <script>
+        // ========== 登录核心配置 ==========
+        // 【重点修改】设置你的专属密码（比如改成你们的纪念日、昵称等）
+        const CORRECT_PASSWORD = "5201314"; 
+        // 可选：登录状态保存时长（单位：小时），0=关闭（刷新需重新登录）
+        const LOGIN_KEEP_HOURS = 24; 
+
+        // ========== 登录逻辑 ==========
+        const loginMask = document.getElementById('loginMask');
+        const mainCard = document.getElementById('mainCard');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorTip = document.getElementById('errorTip');
+
+        // 检查本地是否有已保存的登录状态
+        function checkLoginStatus() {
+            const loginInfo = localStorage.getItem('lovePageLogin');
+            if (!loginInfo) return false;
+            
+            const { expireTime } = JSON.parse(loginInfo);
+            // 未过期则直接登录
+            if (Date.now() < expireTime) {
+                loginMask.style.display = 'none';
+                mainCard.style.display = 'block';
+                return true;
+            }
+            // 过期则清除缓存
+            localStorage.removeItem('lovePageLogin');
+            return false;
+        }
+
+        // 登录验证函数
+        function verifyPassword() {
+            const inputPwd = passwordInput.value.trim();
+            if (inputPwd === CORRECT_PASSWORD) {
+                // 密码正确：隐藏登录层，显示主页面
+                errorTip.style.display = 'none';
+                loginMask.style.display = 'none';
+                mainCard.style.display = 'block';
+
+                // 保存登录状态（如果设置了保存时长）
+                if (LOGIN_KEEP_HOURS > 0) {
+                    const expireTime = Date.now() + LOGIN_KEEP_HOURS * 60 * 60 * 1000;
+                    localStorage.setItem('lovePageLogin', JSON.stringify({ expireTime }));
+                }
+            } else {
+                // 密码错误：显示提示，清空输入框
+                errorTip.style.display = 'block';
+                passwordInput.value = '';
+                // 2秒后自动隐藏错误提示
+                setTimeout(() => {
+                    errorTip.style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        // 页面加载时先检查登录状态
+        window.onload = function() {
+            if (!checkLoginStatus()) {
+                // 未登录则显示登录层
+                loginMask.style.display = 'flex';
+                mainCard.style.display = 'none';
+            }
+        };
+
+        // 点击登录按钮验证密码
+        loginBtn.addEventListener('click', verifyPassword);
+
+        // 按回车键也能验证密码（优化体验）
+        passwordInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                verifyPassword();
+            }
+        });
+
+        // ========== 计时逻辑 ==========
         // 核心：修改这里的日期为你们在一起的第一天！！！
         // 格式：年, 月-1, 日（比如2023年5月20日 → 2023, 4, 20）
-        const startDate = new Date(2025, 3, 14);
+        const startDate = new Date(2023, 4, 20);
 
         // 计算累计时间的函数
         function calculateLoveTime() {
