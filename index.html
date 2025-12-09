@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我们的甜蜜时光 💘</title>
+    <title>小浩❤小鱼的甜蜜时光 💘</title>
     <style>
-        /* 全局样式：甜美可爱风 */
+        /* 全局样式：软萌线条小狗风 */
         * {
             margin: 0;
             padding: 0;
@@ -13,9 +13,20 @@
             font-family: "Microsoft YaHei UI", "Comic Sans MS", 思源柔黑体, sans-serif;
         }
 
+        /* 粒子画布：全屏背景，层级最低 */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none; /* 不影响点击操作 */
+        }
+
         body {
-            /* 渐变背景：奶油粉+浅紫 */
-            background: linear-gradient(120deg, #fff5f8 0%, #fce4ec 50%, #f3e5f5 100%);
+            /* 渐变背景：奶油粉+浅黄（适配线条小狗暖色调） */
+            background: linear-gradient(120deg, #fff9e8 0%, #fff5f8 50%, #fef7fb 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -23,6 +34,39 @@
             justify-content: center;
             padding: 20px;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 线条小狗装饰元素（角落悬浮） */
+        .dog-decoration {
+            position: fixed;
+            z-index: 1;
+            width: 80px;
+            height: 80px;
+            opacity: 0.8;
+            animation: floatDog 6s infinite ease-in-out;
+        }
+        .dog1 {
+            top: 5%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+        .dog2 {
+            bottom: 5%;
+            right: 5%;
+            animation-delay: 2s;
+        }
+        .dog3 {
+            top: 50%;
+            left: 2%;
+            animation-delay: 4s;
+            width: 60px;
+            height: 60px;
+        }
+        @keyframes floatDog {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+            100% { transform: translateY(0) rotate(0deg); }
         }
 
         /* 登录遮罩层（默认显示，覆盖整个页面） */
@@ -32,22 +76,37 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: linear-gradient(120deg, #fff5f8 0%, #fce4ec 100%);
+            background: linear-gradient(120deg, #fff9e8 0%, #fff5f8 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 9999; /* 最高层级，盖住所有内容 */
+            z-index: 9999; /* 最高层级 */
         }
 
-        /* 登录卡片 */
+        /* 登录卡片（线条小狗风格） */
         .login-card {
             background: #fff;
-            border-radius: 24px;
-            box-shadow: 0 8px 30px rgba(255, 105, 180, 0.2);
+            border-radius: 32px;
+            box-shadow: 0 10px 40px rgba(255, 183, 200, 0.2);
             padding: 40px 30px;
             width: 100%;
             max-width: 400px;
             text-align: center;
+            border: 2px solid #ffe8f0;
+            position: relative;
+        }
+        /* 登录卡片小狗装饰 */
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            width: 60px;
+            height: 60px;
+            background: url('https://picsum.photos/seed/dog1/200/200') no-repeat center;
+            background-size: cover;
+            border-radius: 50%;
+            border: 3px solid #fff;
         }
 
         .login-card h2 {
@@ -68,18 +127,19 @@
             width: 100%;
             padding: 15px 20px;
             border: 3px solid #ffd6e0;
-            border-radius: 16px;
+            border-radius: 20px;
             font-size: 1.1rem;
             color: #d81b60;
             background: #fff0f6;
             outline: none;
             margin-bottom: 20px;
             text-align: center;
+            transition: all 0.3s ease;
         }
 
         .password-input:focus {
             border-color: #ff80ab;
-            box-shadow: 0 0 10px rgba(255, 128, 171, 0.3);
+            box-shadow: 0 0 15px rgba(255, 128, 171, 0.3);
         }
 
         /* 登录按钮 */
@@ -89,17 +149,18 @@
             background: linear-gradient(180deg, #ffc1e9 0%, #ff80ab 100%);
             color: white;
             border: none;
-            border-radius: 16px;
+            border-radius: 20px;
             font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(255, 105, 180, 0.3);
-            transition: transform 0.3s ease;
+            box-shadow: 0 6px 15px rgba(255, 105, 180, 0.3);
+            transition: all 0.3s ease;
         }
 
         .login-btn:hover {
             transform: scale(1.05);
             background: linear-gradient(180deg, #ff80ab 0%, #e91e63 100%);
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
         }
 
         /* 错误提示 */
@@ -110,134 +171,140 @@
             display: none; /* 默认隐藏 */
         }
 
-        /* 装饰爱心（随机漂浮） */
-        .heart {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: #ff69b4;
-            transform: rotate(45deg);
-            opacity: 0.7;
-            animation: float 8s infinite ease-in-out;
-            z-index: 0;
-        }
-        .heart::before, .heart::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: #ff69b4;
-            border-radius: 50%;
-        }
-        .heart::before {
-            top: -10px;
-            left: 0;
-        }
-        .heart::after {
-            top: 0;
-            left: -10px;
-        }
-        @keyframes float {
-            0% {
-                transform: rotate(45deg) translate(0, 0) scale(0.8);
-            }
-            50% {
-                transform: rotate(45deg) translate(20px, -30px) scale(1);
-            }
-            100% {
-                transform: rotate(45deg) translate(0, 0) scale(0.8);
-            }
-        }
-
         /* 主卡片（软乎乎的圆角+阴影） */
         .card {
             background: #fff;
-            border-radius: 24px;
-            box-shadow: 0 8px 30px rgba(255, 105, 180, 0.2);
-            padding: 40px 20px;
+            border-radius: 32px;
+            box-shadow: 0 10px 40px rgba(255, 183, 200, 0.2);
+            padding: 50px 20px;
             width: 100%;
-            max-width: 600px;
+            max-width: 700px;
             text-align: center;
             position: relative;
             z-index: 1;
             display: none; /* 默认隐藏，登录后显示 */
+            border: 2px solid #ffe8f0;
         }
 
-        /* 标题样式 */
-        h1 {
+        /* 超大情侣昵称标题 */
+        .couple-name {
             color: #e91e63;
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(255, 105, 180, 0.3);
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 8px rgba(255, 105, 180, 0.3);
+            letter-spacing: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
+        /* 爱心动效 */
+        .couple-name span {
+            animation: beat 1.5s infinite ease-in-out;
+        }
+        @keyframes beat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* 副标题 */
         .subtitle {
             color: #ff80ab;
-            font-size: 1.1rem;
-            margin-bottom: 30px;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        /* 计时提示文字 */
+        .time-tip {
+            color: #d81b60;
+            font-size: 1.3rem;
+            margin: 20px 0;
+            font-weight: 500;
         }
 
         /* 计时核心区域 */
         .time-container {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 18px;
             flex-wrap: wrap;
-            margin: 30px 0;
+            margin: 20px 0 30px;
         }
         .time-box {
             background: linear-gradient(180deg, #ffc1e9 0%, #ff80ab 100%);
             color: white;
-            width: 80px;
-            height: 80px;
-            border-radius: 16px;
+            width: 90px;
+            height: 90px;
+            border-radius: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 10px rgba(255, 105, 180, 0.3);
+            box-shadow: 0 6px 15px rgba(255, 105, 180, 0.3);
             transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        /* 计时框高光效果 */
+        .time-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -50%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: skewX(-25deg);
+            animation: shine 3s infinite;
+        }
+        @keyframes shine {
+            0% { left: -50%; }
+            100% { left: 150%; }
         }
         .time-box:hover {
-            transform: scale(1.08);
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
         }
         .time-number {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: bold;
         }
         .time-text {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             margin-top: 5px;
         }
 
         /* 甜蜜语录区 */
         .sweet-words {
             margin: 30px 0;
-            padding: 20px;
+            padding: 25px;
             background: #fff0f6;
-            border-radius: 16px;
+            border-radius: 20px;
             border: 2px dashed #ffc2e2;
         }
         .sweet-words p {
             color: #d81b60;
-            font-size: 1.1rem;
-            line-height: 1.6;
+            font-size: 1.2rem;
+            line-height: 1.8;
         }
 
-        /* 照片展示区 */
+        /* 照片展示区（线条小狗边框） */
         .photos {
             margin: 30px 0;
             display: flex;
-            gap: 10px;
+            gap: 15px;
             justify-content: center;
             flex-wrap: wrap;
         }
         .photo-item {
-            width: 120px;
-            height: 120px;
-            border-radius: 12px;
+            width: 130px;
+            height: 130px;
+            border-radius: 16px;
             overflow: hidden;
-            border: 3px solid #ffd6e0;
+            border: 4px solid #ffd6e0;
             transition: transform 0.3s ease;
+            box-shadow: 0 4px 10px rgba(255, 105, 180, 0.2);
         }
         .photo-item img {
             width: 100%;
@@ -246,56 +313,71 @@
         }
         .photo-item:hover {
             transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(255, 105, 180, 0.3);
         }
 
         /* 底部小彩蛋 */
         .footer {
             margin-top: 30px;
             color: #ff80ab;
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
 
         /* 适配手机 */
-        @media (max-width: 500px) {
+        @media (max-width: 600px) {
+            .couple-name {
+                font-size: 2.2rem;
+                letter-spacing: 3px;
+            }
             .time-box {
-                width: 70px;
-                height: 70px;
+                width: 75px;
+                height: 75px;
             }
             .time-number {
-                font-size: 1.5rem;
-            }
-            h1 {
-                font-size: 1.8rem;
+                font-size: 1.7rem;
             }
             .login-card {
                 padding: 30px 20px;
+            }
+            .dog-decoration {
+                width: 60px;
+                height: 60px;
+            }
+            .dog3 {
+                width: 40px;
+                height: 40px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- 粒子画布（爱心粒子背景） -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- 线条小狗装饰元素 -->
+    <img src="https://picsum.photos/seed/lineDog1/200/200" alt="线条小狗" class="dog-decoration dog1">
+    <img src="https://picsum.photos/seed/lineDog2/200/200" alt="线条小狗" class="dog-decoration dog2">
+    <img src="https://picsum.photos/seed/lineDog3/200/200" alt="线条小狗" class="dog-decoration dog3">
+
     <!-- 登录遮罩层（默认显示） -->
     <div class="login-mask" id="loginMask">
         <div class="login-card">
-            <h2>🔐 专属甜蜜入口</h2>
-            <p>输入密码即可解锁我们的时光～</p>
+            <h2>🔐 小浩和小鱼的专属入口</h2>
+            <p>输入密码解锁甜蜜时光～🐶</p>
             <input type="password" class="password-input" id="passwordInput" placeholder="请输入访问密码">
-            <button class="login-btn" id="loginBtn">解锁甜蜜时光 💘</button>
+            <button class="login-btn" id="loginBtn">解锁我们的时光 💘</button>
             <div class="error-tip" id="errorTip">密码错误啦～再试试❤️</div>
         </div>
     </div>
 
-    <!-- 随机漂浮爱心（装饰） -->
-    <div class="heart" style="top: 10%; left: 10%; animation-delay: 0s;"></div>
-    <div class="heart" style="top: 20%; left: 80%; animation-delay: 1s;"></div>
-    <div class="heart" style="top: 70%; left: 20%; animation-delay: 2s;"></div>
-    <div class="heart" style="top: 80%; left: 70%; animation-delay: 3s;"></div>
-    <div class="heart" style="top: 40%; left: 50%; animation-delay: 4s;"></div>
-
     <!-- 主卡片（默认隐藏） -->
     <div class="card" id="mainCard">
-        <h1>✨ 我们的甜蜜时光 ✨</h1>
-        <p class="subtitle">从相遇的那一刻，爱意就开始计时啦 💘</p>
+        <!-- 超大情侣昵称 -->
+        <h1 class="couple-name">小浩<span>❤</span>小鱼！！！</h1>
+        <p class="subtitle">从相遇的那一刻，爱意就开始计时啦 🐾</p>
+        
+        <!-- 计时提示文字 -->
+        <p class="time-tip">距离我们相识已经过了：</p>
 
         <!-- 核心计时区 -->
         <div class="time-container">
@@ -345,15 +427,113 @@
         </div>
 
         <div class="footer">
-            爱你的每一天，都是限量版 💝
+            爱你的每一天，都是限量版 💝 | 陪伴是最长情的告白 🐶
         </div>
     </div>
 
     <script>
+        // ========== 爱心粒子效果 ==========
+        class Particle {
+            constructor(canvas, ctx) {
+                this.canvas = canvas;
+                this.ctx = ctx;
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 8 + 2; // 粒子大小
+                this.speedX = (Math.random() - 0.5) * 0.6; // 水平速度
+                this.speedY = (Math.random() - 0.5) * 0.6; // 垂直速度
+                this.color = `rgba(${255}, ${Math.floor(Math.random()*80)+120}, ${Math.floor(Math.random()*80)+120}, ${Math.random()*0.7+0.3})`; // 粉色系
+                this.angle = Math.random() * Math.PI * 2; // 旋转角度
+            }
+
+            // 绘制爱心粒子
+            draw() {
+                this.ctx.save();
+                this.ctx.translate(this.x, this.y);
+                this.ctx.rotate(this.angle);
+                this.ctx.fillStyle = this.color;
+                
+                // 绘制爱心形状
+                this.ctx.beginPath();
+                this.ctx.moveTo(0, 0);
+                this.ctx.bezierCurveTo(
+                    this.size, -this.size/2,
+                    this.size*2, this.size/2,
+                    0, this.size*1.5
+                );
+                this.ctx.bezierCurveTo(
+                    -this.size*2, this.size/2,
+                    -this.size, -this.size/2,
+                    0, 0
+                );
+                this.ctx.fill();
+                this.ctx.restore();
+            }
+
+            // 更新粒子位置
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.angle += 0.01; // 缓慢旋转
+
+                // 超出画布则重置位置
+                if (this.x < 0 || this.x > this.canvas.width) this.x = Math.random() * this.canvas.width;
+                if (this.y < 0 || this.y > this.canvas.height) this.y = Math.random() * this.canvas.height;
+            }
+        }
+
+        // 初始化粒子效果
+        function initParticles() {
+            const canvas = document.getElementById('particleCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 适配窗口大小
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // 创建粒子数组
+            const particles = [];
+            const particleCount = Math.floor((canvas.width * canvas.height) / 15000); // 根据画布大小调整粒子数量
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle(canvas, ctx));
+            }
+
+            // 动画循环
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            // 鼠标互动：点击生成爱心
+            canvas.addEventListener('click', (e) => {
+                for (let i = 0; i < 10; i++) {
+                    const p = new Particle(canvas, ctx);
+                    p.x = e.clientX;
+                    p.y = e.clientY;
+                    p.speedX = (Math.random() - 0.5) * 1.5;
+                    p.speedY = (Math.random() - 0.5) * 1.5;
+                    particles.push(p);
+                }
+            });
+        }
+
+        // 页面加载时初始化粒子
+        window.addEventListener('load', initParticles);
+
         // ========== 登录核心配置 ==========
-        // 【重点修改】设置你的专属密码（比如改成你们的纪念日、昵称等）
+        // 【重点修改】设置你的专属密码
         const CORRECT_PASSWORD = "5201314"; 
-        // 可选：登录状态保存时长（单位：小时），0=关闭（刷新需重新登录）
+        // 可选：登录状态保存时长（单位：小时），0=关闭
         const LOGIN_KEEP_HOURS = 24; 
 
         // ========== 登录逻辑 ==========
@@ -417,7 +597,7 @@
         // 点击登录按钮验证密码
         loginBtn.addEventListener('click', verifyPassword);
 
-        // 按回车键也能验证密码（优化体验）
+        // 按回车键也能验证密码
         passwordInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 verifyPassword();
@@ -440,7 +620,7 @@
             const totalHours = Math.floor(totalMinutes / 60);
             const totalDays = Math.floor(totalHours / 24);
 
-            // 计算年、月（简易版：按1年=12月，1月=30天估算，更贴合情侣计时的直观感）
+            // 计算年、月（简易版：按1年=12月，1月=30天估算）
             const years = Math.floor(totalDays / 365);
             const remainingDaysAfterYears = totalDays % 365;
             const months = Math.floor(remainingDaysAfterYears / 30);
@@ -451,7 +631,7 @@
             const minutes = Math.floor(totalMinutes % 60);
             const seconds = Math.floor(totalSeconds % 60);
 
-            // 更新页面显示（补0，比如1秒→01秒）
+            // 更新页面显示（补0）
             document.getElementById('years').textContent = years.toString().padStart(2, '0');
             document.getElementById('months').textContent = months.toString().padStart(2, '0');
             document.getElementById('days').textContent = days.toString().padStart(2, '0');
@@ -463,18 +643,6 @@
         // 初始化+每秒更新
         calculateLoveTime();
         setInterval(calculateLoveTime, 1000);
-
-        // 点击页面随机生成爱心彩蛋
-        document.addEventListener('click', (e) => {
-            const heart = document.createElement('div');
-            heart.className = 'heart';
-            heart.style.left = `${e.clientX - 10}px`;
-            heart.style.top = `${e.clientY - 10}px`;
-            heart.style.animationDelay = `${Math.random() * 5}s`;
-            document.body.appendChild(heart);
-            // 3秒后移除爱心
-            setTimeout(() => heart.remove(), 3000);
-        });
     </script>
 </body>
 </html>
