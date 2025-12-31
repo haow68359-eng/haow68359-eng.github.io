@@ -31,8 +31,42 @@
         .letter-envelope { padding:35px 20px; cursor:pointer; text-align:center; }
         .envelope-top { color:#f8c9ff; font-size:1.3rem; font-weight:bold; text-shadow:0 0 10px #ff80f6; margin-bottom:12px; }
         .envelope-body { color:#e0b3ff; font-size:1.1rem; }
-        .letter-content { padding:35px 25px; display:none; color:#fefaff; line-height:2; font-size:1.05rem; position:relative; }
-        .letter-close { position:absolute; top:18px; right:18px; font-size:1.6rem; color:#f8c9ff; cursor:pointer; width:28px; height:28px; line-height:28px; text-align:center; }
+        /* ✅ 核心修改：信件固定大小 + 垂直滚动条 + 滚动条美化 */
+        .letter-content { 
+            width: 580px;          /* 固定宽度 */
+            max-width: 90vw;      /* 手机端最大宽度（适配小屏） */
+            max-height: 70vh;     /* 固定最大高度（视口高度70%，不超出屏幕） */
+            padding:35px 25px; 
+            display:none; 
+            color:#fefaff; 
+            line-height:2; 
+            font-size:1.05rem; 
+            position:relative; 
+            overflow-y: auto;     /* 垂直滚动条（内容超出时显示） */
+            overflow-x: hidden;   /* 禁止横向滚动 */
+        }
+        /* ✅ 滚动条美化 - 适配Chrome/Safari */
+        .letter-content::-webkit-scrollbar {
+            width: 8px;           /* 滚动条宽度 */
+        }
+        .letter-content::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05); /* 滚动条轨道背景 */
+            border-radius: 4px;
+        }
+        .letter-content::-webkit-scrollbar-thumb {
+            background: rgba(248,201,255,0.5); /* 滚动条滑块颜色 */
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .letter-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(248,201,255,0.8); /* 滑块hover颜色变深 */
+        }
+        /* ✅ 滚动条美化 - 适配Firefox */
+        .letter-content {
+            scrollbar-width: thin; /* 滚动条宽度：细 */
+            scrollbar-color: rgba(248,201,255,0.5) rgba(255,255,255,0.05); /* 滑块颜色 轨道颜色 */
+        }
+        .letter-close { position:absolute; top:18px; right:18px; font-size:1.6rem; color:#f8c9ff; cursor:pointer; width:28px; height:28px; line-height:28px; text-align:center; z-index: 10; }
         #letterText { margin-top:8px; white-space:pre-line; }
         .card { padding:40px 15px; width:100%; max-width:680px; text-align:center; z-index:2; display:none; }
         .couple-name { color:#f8c9ff; font-size:clamp(1.8rem,8vw,3rem); letter-spacing:4px; text-shadow:0 0 15px #ff80f6; margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:8px; }
@@ -59,7 +93,7 @@
     <canvas id="particleCanvas"></canvas>
     <audio id="bgMusic" loop preload="auto">
         <source src="https://music.163.com/song/media/outer/url?id=425570662.mp3" type="audio/mpeg">
-    </audio>
+    
     <div class="volume-control" id="volumeControl">🔊</div>
     <img src="https://picsum.photos/seed/starDog1/200/200" alt="线条小狗" class="dog-decoration dog1">
     <img src="https://picsum.photos/seed/starDog2/200/200" alt="线条小狗" class="dog-decoration dog2">
@@ -67,7 +101,7 @@
         <div class="login-card">
             <h2>🔐 2026元旦专属入口</h2>
             <p>输入密码解锁写给小宝的信～✨</p>
-            <input type="password" class="password-input" id="passwordInput" placeholder="请输入专属密码">
+            <input type="password" class="password-input" id="passwordInput" placeholder="请输入密码">
             <button class="login-btn" id="loginBtn">解锁甜蜜时光 💌</button>
             <div class="error-tip" id="errorTip">密码错误啦～再试试❤️</div>
         </div>
@@ -108,7 +142,7 @@
     <script>
         const CONFIG = {
             PASSWORD: "5201314",
-            LOVE_START_DATE: new Date(2025, 2, 14), // ✅ 修正：3月是2（0开始）
+            LOVE_START_DATE: new Date(2025, 2, 14), // ✅ 3月14日（月份0开始）
             BG_MUSIC_URL: "https://music.163.com/song/media/outer/url?id=425570662.mp3",
             LETTER_CONTENT: `💌 致我最爱的小宝：
 
