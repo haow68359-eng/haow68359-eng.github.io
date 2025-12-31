@@ -1,5 +1,5 @@
 // ========== 配置项（可修改这里！） ==========
-const CORRECT_PASSWORD = "5201314"; // 你的专属密码
+const CORRECT_PASSWORD = "520"; // 你的专属密码
 const LOGIN_KEEP_HOURS = 24;        // 登录状态保存时长（小时）
 const startDate = new Date(2025, 3, 14); // 相识日期：年,月-1,日
 
