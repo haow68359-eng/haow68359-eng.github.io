@@ -2,20 +2,351 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>2026元旦 ❤ 小浩&小鱼的甜蜜时光</title>
-    <!-- 引入外部样式文件 -->
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 全局样式重置+基础配置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei UI", "Comic Sans MS", 思源柔黑体, sans-serif;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        /* ✅ 星空背景画布 - 全屏底层，动画核心 */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(160deg, #0f0829 0%, #291452 40%, #4b1b6b 70%, #7b2cb9 100%);
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            position: relative;
+        }
+
+        /* ✅ 线条小狗装饰 - 漂浮动画+发光效果（适配星空） */
+        .dog-decoration {
+            position: fixed;
+            z-index: 1;
+            opacity: 0.9;
+            filter: drop-shadow(0 0 8px #f8c9ff);
+            animation: floatDog 8s infinite ease-in-out;
+        }
+        .dog1 {
+            top: 3%;
+            left: 3%;
+            width: 70px;
+            height: 70px;
+            animation-delay: 0s;
+        }
+        .dog2 {
+            bottom: 3%;
+            right: 3%;
+            width: 60px;
+            height: 60px;
+            animation-delay: 3s;
+        }
+        @keyframes floatDog {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+
+        /* ✅ 通用半透明毛玻璃样式 - 核心无割裂感，放弃@extend手动实现 */
+        .login-card, .letter-envelope, .letter-content, .card, .sweet-words {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 220, 255, 0.3);
+            border-radius: 32px;
+            box-shadow: 0 8px 40px rgba(123, 44, 185, 0.2);
+        }
+
+        /* ✅ 登录遮罩层 - 居中显示，适配手机 */
+        .login-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .login-card {
+            padding: 35px 25px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-card h2 {
+            color: #f8c9ff;
+            font-size: 1.6rem;
+            text-shadow: 0 0 10px #ff80f6;
+            margin-bottom: 10px;
+        }
+        .login-card p {
+            color: #e0b3ff;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+        .password-input {
+            width: 100%;
+            padding: 14px 20px;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,220,255,0.5);
+            border-radius: 20px;
+            color: #fefaff;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+        }
+        .password-input:focus {
+            border-color: #ff80f6;
+            box-shadow: 0 0 15px rgba(255,128,246,0.4);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(180deg, #d870ff 0%, #a239ea 100%);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(162,57,234,0.3);
+            transition: all 0.3s ease;
+        }
+        .login-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(162,57,234,0.5);
+        }
+        .error-tip {
+            color: #ff80f6;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            display: none;
+        }
+
+        /* ✅ 元旦信件弹窗 - 飞入动画+开合效果（核心修复） */
+        .letter-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0) rotate(-10deg);
+            z-index: 9998;
+            width: 100%;
+            max-width: 580px;
+            opacity: 0;
+            animation: letterFlyIn 1.2s ease-out forwards 0.5s;
+            display: none;
+        }
+        /* 信件飞入动画 - 补全单位，完美运行 */
+        @keyframes letterFlyIn {
+            0% { transform: translate(-50%, -150%) scale(0.5) rotate(-20deg); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        }
+        /* 信封样式 */
+        .letter-envelope {
+            padding: 35px 20px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .envelope-top {
+            color: #f8c9ff;
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ff80f6;
+            margin-bottom: 12px;
+        }
+        .envelope-body {
+            color: #e0b3ff;
+            font-size: 1.1rem;
+        }
+        /* 信件内容样式 */
+        .letter-content {
+            padding: 35px 25px;
+            display: none;
+            color: #fefaff;
+            line-height: 2;
+            font-size: 1.05rem;
+            position: relative;
+        }
+        .letter-close {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            font-size: 1.6rem;
+            color: #f8c9ff;
+            cursor: pointer;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+        }
+        #letterText {
+            margin-top: 8px;
+            white-space: pre-line;
+        }
+
+        /* ✅ 主计时界面 - 半透明毛玻璃，完美适配手机 */
+        .card {
+            padding: 40px 15px;
+            width: 100%;
+            max-width: 680px;
+            text-align: center;
+            z-index: 2;
+            display: none;
+        }
+        /* 情侣昵称+爱心跳动动画 */
+        .couple-name {
+            color: #f8c9ff;
+            font-size: clamp(1.8rem, 8vw, 3rem);
+            letter-spacing: 4px;
+            text-shadow: 0 0 15px #ff80f6;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .couple-name span {
+            animation: heartBeat 1.6s infinite ease-in-out;
+        }
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .subtitle {
+            color: #e0b3ff;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            margin-bottom: 8px;
+        }
+        .time-tip {
+            color: #d4b0ff;
+            font-size: clamp(1rem, 3.5vw, 1.2rem);
+            margin: 18px 0;
+            font-weight: 500;
+        }
+
+        /* ✅ 计时框 - 发光+悬浮效果，手机端自动缩小 */
+        .time-container {
+            display: flex;
+            justify-content: center;
+            gap: clamp(10px, 4vw, 16px);
+            flex-wrap: wrap;
+            margin: 18px 0 25px;
+        }
+        .time-box {
+            width: clamp(60px, 18vw, 85px);
+            height: clamp(60px, 18vw, 85px);
+            border-radius: 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,220,255,0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #f8c9ff;
+            text-shadow: 0 0 8px #ff80f6;
+            transition: all 0.3 ease;
+            position: relative;
+            overflow: hidden;
+        }
+        /* 计时框高光流光动画 */
+        .time-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -50%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: skewX(-25deg);
+            animation: shine 3 infinite linear;
+        }
+        @keyframes shine {
+            0% { left: -50%; }
+            100% { left: 150%; }
+        }
+        .time-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255,128,246,0.4);
+        }
+        .time-box span:first-child {
+            font-size: clamp(1.2rem, 6vw, 1.9rem);
+            font-weight: bold;
+        }
+        .time-box span:last-child {
+            font-size: clamp(0.7rem, 2vw, 0.85rem);
+            margin-top: 4px;
+        }
+
+        /* ✅ 语录/照片/底部 - 手机端适配 */
+        .sweet-words {
+            padding: 20px;
+            margin: 25px 0;
+            color: #d4b0ff;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            line-height: 1.7;
+        }
+        .photos {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 25px 0;
+        }
+        .photo-item {
+            width: clamp(80px, 25vw, 120px);
+            height: clamp(80px, 25vw, 120px);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid rgba(255,220,255,0.5);
+            transition: all 0.3 ease;
+        }
+        .photo-item:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255,128,246,0.4);
+        }
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .footer {
+            color: #e0b3ff;
+            font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+            margin-top: 25px;
+        }
+    </style>
 </head>
 <body>
-    <!-- 粒子画布：星空+爱心粒子背景 -->
+    <!-- 星空粒子画布（核心动画） -->
     <canvas id="particleCanvas"></canvas>
 
     <!-- 线条小狗装饰（星空版） -->
     <img src="https://picsum.photos/seed/starDog1/200/200" alt="线条小狗" class="dog-decoration dog1">
     <img src="https://picsum.photos/seed/starDog2/200/200" alt="线条小狗" class="dog-decoration dog2">
 
-    <!-- 1. 登录遮罩层（默认显示） -->
+    <!-- 1. 登录遮罩层 -->
     <div class="login-mask" id="loginMask">
         <div class="login-card">
             <h2>🔐 2026元旦专属入口</h2>
@@ -26,7 +357,7 @@
         </div>
     </div>
 
-    <!-- 2. 元旦信件弹窗（登录后飞入，每次打开必弹） -->
+    <!-- 2. 元旦信件弹窗（每次登录必弹） -->
     <div class="letter-box" id="letterBox">
         <div class="letter-envelope" id="letterEnvelope">
             <div class="envelope-top">💌 2026年元旦 · 给小宝的信 💌</div>
@@ -34,18 +365,16 @@
         </div>
         <div class="letter-content" id="letterContent">
             <div class="letter-close" id="letterClose">×</div>
-            <!-- 信件内容从外部JS引入 -->
             <div id="letterText"></div>
         </div>
     </div>
 
-    <!-- 3. 主计时界面（半透明毛玻璃） -->
+    <!-- 3. 主计时界面 -->
     <div class="card" id="mainCard">
         <h1 class="couple-name">小浩<span>❤</span>小鱼！！！</h1>
         <p class="subtitle">2026元旦快乐 · 爱意永不打烊 🎆</p>
         <p class="time-tip">距离我们相识已经过了：</p>
 
-        <!-- 计时核心区 -->
         <div class="time-container">
             <div class="time-box"><span id="years">00</span><span>年</span></div>
             <div class="time-box"><span id="months">00</span><span>月</span></div>
@@ -55,13 +384,11 @@
             <div class="time-box"><span id="seconds">00</span><span>秒</span></div>
         </div>
 
-        <!-- 甜蜜语录 -->
         <div class="sweet-words">
             <p>💓 新的一年，继续牵着小宝的手，岁岁年年～</p>
             <p>💓 2026，我们的故事依旧甜蜜升温 📖</p>
         </div>
 
-        <!-- 合照区 -->
         <div class="photos">
             <div class="photo-item"><img src="https://picsum.photos/seed/love1/200/200" alt="合照1"></div>
             <div class="photo-item"><img src="https://picsum.photos/seed/love2/200/200" alt="合照2"></div>
@@ -71,8 +398,188 @@
         <div class="footer">2026元旦限定 ❤ 爱你的每一天都是限量版</div>
     </div>
 
-    <!-- 引入外部JS文件（顺序不能乱） -->
-    <script src="letter-content.js"></script>
-    <script src="script.js"></script>
+    <script>
+        // ========== ✅ 可自定义配置项（在这里修改你的信息，其他不用动） ==========
+        const CONFIG = {
+            PASSWORD: "5201314",          // 你的专属密码
+            LOVE_START_DATE: new Date(2025, 3, 14), // 相识日期：年,月-1,日
+            // 2026元旦给小宝的信（直接修改内容即可，支持换行/表情）
+            LETTER_CONTENT: `💌 致我最爱的小宝：
+
+2026年元旦快乐呀～🥳
+新的一年，新的开始，不变的是我对你的爱❤️
+
+回首我们在一起的时光，每一分每一秒都甜到心底。
+2025年，我们一起走过了春夏秋冬，分享了快乐，分担了烦恼；
+2026年，我会继续牵着你的手，陪你看遍世间美好，岁岁年年，永不分离。
+
+小宝，你是我生命里最亮的星星，是我所有温柔的归宿。
+新的一年，愿我们：
+✨ 平安喜乐，万事顺意
+✨ 爱意升温，甜蜜加倍
+✨ 三餐四季，岁岁相伴
+
+我爱你，不止2026，而是朝朝暮暮、生生世世。
+
+永远爱你的小浩
+2026年1月1日 · 元旦`
+        };
+
+        // ========== DOM元素获取 ==========
+        const loginMask = document.getElementById('loginMask');
+        const mainCard = document.getElementById('mainCard');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorTip = document.getElementById('errorTip');
+        const letterBox = document.getElementById('letterBox');
+        const letterEnvelope = document.getElementById('letterEnvelope');
+        const letterContent = document.getElementById('letterContent');
+        const letterClose = document.getElementById('letterClose');
+        const letterText = document.getElementById('letterText');
+
+        // ========== ✅ 登录验证 - 强制每次登录必弹信件（关闭缓存） ==========
+        function verifyPassword() {
+            const inputPwd = passwordInput.value.trim();
+            if (inputPwd === CONFIG.PASSWORD) {
+                errorTip.style.display = 'none';
+                loginMask.style.display = 'none';
+                letterText.innerHTML = CONFIG.LETTER_CONTENT;
+                letterBox.style.display = 'block'; // 立即显示信件
+                mainCard.style.display = 'none';
+            } else {
+                errorTip.style.display = 'block';
+                passwordInput.value = '';
+                setTimeout(() => errorTip.style.display = 'none', 2000);
+            }
+        }
+
+        // ========== ✅ 信件开合交互 ==========
+        letterEnvelope.addEventListener('click', () => {
+            letterEnvelope.style.display = 'none';
+            letterContent.style.display = 'block';
+        });
+        letterClose.addEventListener('click', () => {
+            letterBox.style.display = 'none';
+            mainCard.style.display = 'block';
+        });
+
+        // ========== ✅ 相识计时逻辑 ==========
+        function calculateLoveTime() {
+            const now = new Date();
+            const diff = now - CONFIG.LOVE_START_DATE;
+            const totalSeconds = Math.floor(diff / 1000);
+            const totalMinutes = Math.floor(totalSeconds / 60);
+            const totalHours = Math.floor(totalMinutes / 60);
+            const totalDays = Math.floor(totalHours / 24);
+
+            const years = Math.floor(totalDays / 365);
+            const remainingDays = totalDays % 365;
+            const months = Math.floor(remainingDays / 30);
+            const days = remainingDays % 30;
+            const hours = Math.floor(totalHours % 24);
+            const minutes = Math.floor(totalMinutes % 60);
+            const seconds = Math.floor(totalSeconds % 60);
+
+            document.getElementById('years').textContent = years.toString().padStart(2, '0');
+            document.getElementById('months').textContent = months.toString().padStart(2, '0');
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+
+        // ========== ✅ 星空粒子动画（星星+爱心，适配手机） ==========
+        class Particle {
+            constructor(canvas, ctx) {
+                this.canvas = canvas;
+                this.ctx = ctx;
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                // 手机端自动缩小粒子尺寸
+                this.size = window.innerWidth < 768 ? Math.random() * 4 + 1 : Math.random() * 6 + 1;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.speedY = (Math.random() - 0.5) * 0.4;
+                this.isHeart = Math.random() > 0.7; // 30%爱心，70%星星
+                this.color = this.isHeart 
+                    ? `rgba(${248}, ${201}, ${255}, ${Math.random()*0.8+0.2})` 
+                    : `rgba(${255}, ${255}, ${255}, ${Math.random()*0.7+0.3})`;
+            }
+            // 绘制星星/爱心
+            draw() {
+                this.ctx.fillStyle = this.color;
+                if (this.isHeart) {
+                    this.ctx.save();
+                    this.ctx.translate(this.x, this.y);
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0,0);
+                    this.ctx.bezierCurveTo(this.size,-this.size/2,this.size*2,this.size/2,0,this.size*1.5);
+                    this.ctx.bezierCurveTo(-this.size*2,this.size/2,-this.size,-this.size/2,0,0);
+                    this.ctx.fill();
+                    this.ctx.restore();
+                } else {
+                    this.ctx.beginPath();
+                    for(let i=0;i<5;i++){
+                        this.ctx.lineTo(Math.cos((18+i*72)*Math.PI/180)*this.size+this.x,
+                                        Math.sin((18+i*72)*Math.PI/180)*this.size+this.y);
+                        this.ctx.lineTo(Math.cos((54+i*72)*Math.PI/180)*this.size/2+this.x,
+                                        Math.sin((54+i*72)*Math.PI/180)*this.size/2+this.y);
+                    }
+                    this.ctx.closePath();
+                    this.ctx.fill();
+                }
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if(this.x<0||this.x>this.canvas.width) this.x = Math.random()*this.canvas.width;
+                if(this.y<0||this.y>this.canvas.height) this.y = Math.random()*this.canvas.height;
+            }
+        }
+        // 初始化粒子
+        function initParticles() {
+            const canvas = document.getElementById('particleCanvas');
+            const ctx = canvas.getContext('2d');
+            // 适配窗口大小+手机端
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+            // 手机端减少粒子数量，避免卡顿
+            const particleCount = window.innerWidth < 768 
+                ? Math.floor((canvas.width*canvas.height)/20000) 
+                : Math.floor((canvas.width*canvas.height)/12000);
+            const particles = [];
+            for(let i=0;i<particleCount;i++) particles.push(new Particle(canvas,ctx));
+            // 动画循环
+            function animate() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                particles.forEach(p=>{p.update();p.draw();});
+                requestAnimationFrame(animate);
+            }
+            animate();
+            // 点击生成爱心彩蛋
+            canvas.addEventListener('click', e=>{
+                for(let i=0;i<10;i++){
+                    const p = new Particle(canvas,ctx);
+                    p.x=e.clientX; p.y=e.clientY;
+                    p.speedX=(Math.random()-0.5)*1.5; p.speedY=(Math.random()-0.5)*1.5;
+                    particles.push(p);
+                }
+            });
+        }
+
+        // ========== ✅ 事件绑定+初始化 ==========
+        window.addEventListener('load', () => {
+            initParticles(); // 启动星空粒子动画
+            calculateLoveTime(); // 初始化计时
+            setInterval(calculateLoveTime, 1000); // 每秒更新计时
+        });
+        loginBtn.addEventListener('click', verifyPassword);
+        passwordInput.addEventListener('keydown', e => {
+            if(e.key === 'Enter') verifyPassword();
+        });
+    </script>
 </body>
 </html>
