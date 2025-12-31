@@ -5,389 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>2026元旦 ❤ 小浩&小鱼的甜蜜时光</title>
     <style>
-        /* 全局样式重置+基础配置 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Microsoft YaHei UI", "Comic Sans MS", 思源柔黑体, sans-serif;
-        }
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow-x: hidden;
-        }
-        /* ✅ 星空背景画布 - 全屏底层，动画核心 */
-        #particleCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            pointer-events: none;
-            background: linear-gradient(160deg, #0f0829 0%, #291452 40%, #4b1b6b 70%, #7b2cb9 100%);
-        }
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            position: relative;
-        }
-
-        /* ✅ 线条小狗装饰 - 漂浮动画+发光效果（适配星空） */
-        .dog-decoration {
-            position: fixed;
-            z-index: 1;
-            opacity: 0.9;
-            filter: drop-shadow(0 0 8px #f8c9ff);
-            animation: floatDog 8s infinite ease-in-out;
-        }
-        .dog1 {
-            top: 3%;
-            left: 3%;
-            width: 70px;
-            height: 70px;
-            animation-delay: 0s;
-        }
-        .dog2 {
-            bottom: 3%;
-            right: 3%;
-            width: 60px;
-            height: 60px;
-            animation-delay: 3s;
-        }
-        @keyframes floatDog {
-            0% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(5deg); }
-            100% { transform: translateY(0) rotate(0deg); }
-        }
-
-        /* ✅ 音量控制按钮 - 半透明+发光，角落悬浮 */
-        .volume-control {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            z-index: 999;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 220, 255, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #f8c9ff;
-            font-size: 1.5rem;
-            cursor: pointer;
-            filter: drop-shadow(0 0 8px #ff80f6);
-            transition: all 0.3s ease;
-            display: none; /* 登录后显示 */
-        }
-        .volume-control:hover {
-            transform: scale(1.1);
-            background: rgba(255, 255, 255, 0.15);
-        }
-        /* 手机端音量按钮适配 */
-        @media (max-width: 600px) {
-            .volume-control {
-                width: 40px;
-                height: 40px;
-                font-size: 1.2rem;
-                bottom: 15px;
-                left: 15px;
-            }
-        }
-
-        /* ✅ 通用半透明毛玻璃样式 - 核心无割裂感 */
-        .login-card, .letter-envelope, .letter-content, .card, .sweet-words {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 220, 255, 0.3);
-            border-radius: 32px;
-            box-shadow: 0 8px 40px rgba(123, 44, 185, 0.2);
-        }
-
-        /* ✅ 登录遮罩层 - 居中显示，适配手机 */
-        .login-mask {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-        .login-card {
-            padding: 35px 25px;
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-        .login-card h2 {
-            color: #f8c9ff;
-            font-size: 1.6rem;
-            text-shadow: 0 0 10px #ff80f6;
-            margin-bottom: 10px;
-        }
-        .login-card p {
-            color: #e0b3ff;
-            font-size: 0.95rem;
-            margin-bottom: 25px;
-        }
-        .password-input {
-            width: 100%;
-            padding: 14px 20px;
-            margin-bottom: 20px;
-            background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,220,255,0.5);
-            border-radius: 20px;
-            color: #fefaff;
-            font-size: 1rem;
-            text-align: center;
-            outline: none;
-        }
-        .password-input:focus {
-            border-color: #ff80f6;
-            box-shadow: 0 0 15px rgba(255,128,246,0.4);
-        }
-        .login-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(180deg, #d870ff 0%, #a239ea 100%);
-            color: #fff;
-            border: none;
-            border-radius: 20px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(162,57,234,0.3);
-            transition: all 0.3s ease;
-        }
-        .login-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(162,57,234,0.5);
-        }
-        .error-tip {
-            color: #ff80f6;
-            font-size: 0.85rem;
-            margin-top: 15px;
-            display: none;
-        }
-
-        /* ✅ 元旦信件弹窗 - 飞入动画+开合效果 */
-        .letter-box {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0) rotate(-10deg);
-            z-index: 9998;
-            width: 100%;
-            max-width: 580px;
-            opacity: 0;
-            animation: letterFlyIn 1.2s ease-out forwards 0.5s;
-            display: none;
-        }
-        @keyframes letterFlyIn {
-            0% { transform: translate(-50%, -150%) scale(0.5) rotate(-20deg); opacity: 0; }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
-        }
-        .letter-envelope {
-            padding: 35px 20px;
-            cursor: pointer;
-            text-align: center;
-        }
-        .envelope-top {
-            color: #f8c9ff;
-            font-size: 1.3rem;
-            font-weight: bold;
-            text-shadow: 0 0 10px #ff80f6;
-            margin-bottom: 12px;
-        }
-        .envelope-body {
-            color: #e0b3ff;
-            font-size: 1.1rem;
-        }
-        .letter-content {
-            padding: 35px 25px;
-            display: none;
-            color: #fefaff;
-            line-height: 2;
-            font-size: 1.05rem;
-            position: relative;
-        }
-        .letter-close {
-            position: absolute;
-            top: 18px;
-            right: 18px;
-            font-size: 1.6rem;
-            color: #f8c9ff;
-            cursor: pointer;
-            width: 28px;
-            height: 28px;
-            line-height: 28px;
-            text-align: center;
-        }
-        #letterText {
-            margin-top: 8px;
-            white-space: pre-line;
-        }
-
-        /* ✅ 主计时界面 - 半透明毛玻璃，完美适配手机 */
-        .card {
-            padding: 40px 15px;
-            width: 100%;
-            max-width: 680px;
-            text-align: center;
-            z-index: 2;
-            display: none;
-        }
-        .couple-name {
-            color: #f8c9ff;
-            font-size: clamp(1.8rem, 8vw, 3rem);
-            letter-spacing: 4px;
-            text-shadow: 0 0 15px #ff80f6;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .couple-name span {
-            animation: heartBeat 1.6s infinite ease-in-out;
-        }
-        @keyframes heartBeat {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        .subtitle {
-            color: #e0b3ff;
-            font-size: clamp(0.9rem, 3vw, 1.1rem);
-            margin-bottom: 8px;
-        }
-        .time-tip {
-            color: #d4b0ff;
-            font-size: clamp(1rem, 3.5vw, 1.2rem);
-            margin: 18px 0;
-            font-weight: 500;
-        }
-
-        /* ✅ 计时框 - 发光+悬浮效果，手机端自动缩小 */
-        .time-container {
-            display: flex;
-            justify-content: center;
-            gap: clamp(10px, 4vw, 16px);
-            flex-wrap: wrap;
-            margin: 18px 0 25px;
-        }
-        .time-box {
-            width: clamp(60px, 18vw, 85px);
-            height: clamp(60px, 18vw, 85px);
-            border-radius: 20px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,220,255,0.4);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #f8c9ff;
-            text-shadow: 0 0 8px #ff80f6;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .time-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -50%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transform: skewX(-25deg);
-            animation: shine 3s infinite linear;
-        }
-        @keyframes shine {
-            0% { left: -50%; }
-            100% { left: 150%; }
-        }
-        .time-box:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(255,128,246,0.4);
-        }
-        .time-box span:first-child {
-            font-size: clamp(1.2rem, 6vw, 1.9rem);
-            font-weight: bold;
-        }
-        .time-box span:last-child {
-            font-size: clamp(0.7rem, 2vw, 0.85rem);
-            margin-top: 4px;
-        }
-
-        /* ✅ 语录/照片/底部 - 手机端适配 */
-        .sweet-words {
-            padding: 20px;
-            margin: 25px 0;
-            color: #d4b0ff;
-            font-size: clamp(0.9rem, 3vw, 1.1rem);
-            line-height: 1.7;
-        }
-        .photos {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 25px 0;
-        }
-        .photo-item {
-            width: clamp(80px, 25vw, 120px);
-            height: clamp(80px, 25vw, 120px);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 2px solid rgba(255,220,255,0.5);
-            transition: all 0.3s ease;
-        }
-        .photo-item:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(255,128,246,0.4);
-        }
-        .photo-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .footer {
-            color: #e0b3ff;
-            font-size: clamp(0.8rem, 2.5vw, 0.95rem);
-            margin-top: 25px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft YaHei UI", "Comic Sans MS", sans-serif; }
+        html, body { width: 100%; height: 100%; overflow-x: hidden; }
+        #particleCanvas { position: fixed; top:0; left:0; width:100vw; height:100vh; z-index:0; pointer-events:none; background: linear-gradient(160deg, #0f0829 0%, #291452 40%, #4b1b6b 70%, #7b2cb9 100%); }
+        body { display: flex; flex-direction: column; align-items: center; justify-content: center; padding:15px; position:relative; }
+        .dog-decoration { position:fixed; z-index:1; opacity:0.9; filter:drop-shadow(0 0 8px #f8c9ff); animation:floatDog 8s infinite ease-in-out; }
+        .dog1 { top:3%; left:3%; width:70px; height:70px; animation-delay:0s; }
+        .dog2 { bottom:3%; right:3%; width:60px; height:60px; animation-delay:3s; }
+        @keyframes floatDog { 0%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-15px) rotate(5deg);}100%{transform:translateY(0) rotate(0deg);} }
+        .volume-control { position:fixed; bottom:20px; left:20px; z-index:999; width:50px; height:50px; border-radius:50%; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(255,220,255,0.4); display:flex; align-items:center; justify-content:center; color:#f8c9ff; font-size:1.5rem; cursor:pointer; filter:drop-shadow(0 0 8px #ff80f6); transition:all 0.3s ease; display:none; }
+        .volume-control:hover { transform:scale(1.1); background:rgba(255,255,255,0.15); }
+        @media (max-width:600px) { .volume-control { width:40px; height:40px; font-size:1.2rem; bottom:15px; left:15px; } }
+        .login-card, .letter-envelope, .letter-content, .card, .sweet-words { background:rgba(255,255,255,0.08); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); border:1px solid rgba(255,220,255,0.3); border-radius:32px; box-shadow:0 8px 40px rgba(123,44,185,0.2); }
+        .login-mask { position:fixed; top:0; left:0; width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; z-index:9999; }
+        .login-card { padding:35px 25px; width:100%; max-width:400px; text-align:center; }
+        .login-card h2 { color:#f8c9ff; font-size:1.6rem; text-shadow:0 0 10px #ff80f6; margin-bottom:10px; }
+        .login-card p { color:#e0b3ff; font-size:0.95rem; margin-bottom:25px; }
+        .password-input { width:100%; padding:14px 20px; margin-bottom:20px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,220,255,0.5); border-radius:20px; color:#fefaff; font-size:1rem; text-align:center; outline:none; }
+        .password-input:focus { border-color:#ff80f6; box-shadow:0 0 15px rgba(255,128,246,0.4); }
+        .login-btn { width:100%; padding:14px; background:linear-gradient(180deg, #d870ff 0%, #a239ea 100%); color:#fff; border:none; border-radius:20px; font-size:1rem; font-weight:bold; cursor:pointer; box-shadow:0 6px 20px rgba(162,57,234,0.3); transition:all 0.3s ease; }
+        .login-btn:hover { transform:scale(1.05); box-shadow:0 8px 25px rgba(162,57,234,0.5); }
+        .error-tip { color:#ff80f6; font-size:0.85rem; margin-top:15px; display:none; }
+        .letter-box { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0) rotate(-10deg); z-index:9998; width:100%; max-width:580px; opacity:0; animation:letterFlyIn 1.2s ease-out forwards 0.5s; display:none; }
+        @keyframes letterFlyIn { 0%{transform:translate(-50%,-150%) scale(0.5) rotate(-20deg);opacity:0;}100%{transform:translate(-50%,-50%) scale(1) rotate(0deg);opacity:1;} }
+        .letter-envelope { padding:35px 20px; cursor:pointer; text-align:center; }
+        .envelope-top { color:#f8c9ff; font-size:1.3rem; font-weight:bold; text-shadow:0 0 10px #ff80f6; margin-bottom:12px; }
+        .envelope-body { color:#e0b3ff; font-size:1.1rem; }
+        .letter-content { padding:35px 25px; display:none; color:#fefaff; line-height:2; font-size:1.05rem; position:relative; }
+        .letter-close { position:absolute; top:18px; right:18px; font-size:1.6rem; color:#f8c9ff; cursor:pointer; width:28px; height:28px; line-height:28px; text-align:center; }
+        #letterText { margin-top:8px; white-space:pre-line; }
+        .card { padding:40px 15px; width:100%; max-width:680px; text-align:center; z-index:2; display:none; }
+        .couple-name { color:#f8c9ff; font-size:clamp(1.8rem,8vw,3rem); letter-spacing:4px; text-shadow:0 0 15px #ff80f6; margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:8px; }
+        .couple-name span { animation:heartBeat 1.6s infinite ease-in-out; }
+        @keyframes heartBeat { 0%{transform:scale(1);}50%{transform:scale(1.2);}100%{transform:scale(1);} }
+        .subtitle { color:#e0b3ff; font-size:clamp(0.9rem,3vw,1.1rem); margin-bottom:8px; }
+        .time-tip { color:#d4b0ff; font-size:clamp(1rem,3.5vw,1.2rem); margin:18px 0; font-weight:500; }
+        .time-container { display:flex; justify-content:center; gap:clamp(10px,4vw,16px); flex-wrap:wrap; margin:18px 0 25px; }
+        .time-box { width:clamp(60px,18vw,85px); height:clamp(60px,18vw,85px); border-radius:20px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,220,255,0.4); display:flex; flex-direction:column; align-items:center; justify-content:center; color:#f8c9ff; text-shadow:0 0 8px #ff80f6; transition:all 0.3s ease; position:relative; overflow:hidden; }
+        .time-box::before { content:''; position:absolute; top:0; left:-50%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent); transform:skewX(-25deg); animation:shine 3s infinite linear; }
+        @keyframes shine { 0%{left:-50%;}100%{left:150%;} }
+        .time-box:hover { transform:scale(1.1); box-shadow:0 0 20px rgba(255,128,246,0.4); }
+        .time-box span:first-child { font-size:clamp(1.2rem,6vw,1.9rem); font-weight:bold; }
+        .time-box span:last-child { font-size:clamp(0.7rem,2vw,0.85rem); margin-top:4px; }
+        .sweet-words { padding:20px; margin:25px 0; color:#d4b0ff; font-size:clamp(0.9rem,3vw,1.1rem); line-height:1.7; }
+        .photos { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:25px 0; }
+        .photo-item { width:clamp(80px,25vw,120px); height:clamp(80px,25vw,120px); border-radius:16px; overflow:hidden; border:2px solid rgba(255,220,255,0.5); transition:all 0.3s ease; }
+        .photo-item:hover { transform:scale(1.1); box-shadow:0 0 20px rgba(255,128,246,0.4); }
+        .photo-item img { width:100%; height:100%; object-fit:cover; }
+        .footer { color:#e0b3ff; font-size:clamp(0.8rem,2.5vw,0.95rem); margin-top:25px; }
     </style>
 </head>
 <body>
-    <!-- 星空粒子画布（核心动画） -->
     <canvas id="particleCanvas"></canvas>
-
-    <!-- ✅ 背景音乐元素（隐藏，登录后播放） -->
+    <!-- ✅ 修复：完整闭合audio标签，内置爱情纯音乐Sweet Love -->
     <audio id="bgMusic" loop preload="auto">
-        <source src="https://music.163.com/song/media/outer/url?id=186016.mp3" type="audio/mpeg">
-    
-
-    <!-- ✅ 音量控制按钮（登录后显示） -->
+        <source src="https://music.163.com/song/media/outer/url?id=425570662.mp3" type="audio/mpeg">
+    </audio>
     <div class="volume-control" id="volumeControl">🔊</div>
-
-    <!-- 线条小狗装饰（星空版） -->
     <img src="https://picsum.photos/seed/starDog1/200/200" alt="线条小狗" class="dog-decoration dog1">
     <img src="https://picsum.photos/seed/starDog2/200/200" alt="线条小狗" class="dog-decoration dog2">
-
-    <!-- 1. 登录遮罩层 -->
     <div class="login-mask" id="loginMask">
         <div class="login-card">
             <h2>🔐 2026元旦专属入口</h2>
@@ -397,8 +73,6 @@
             <div class="error-tip" id="errorTip">密码错误啦～再试试❤️</div>
         </div>
     </div>
-
-    <!-- 2. 元旦信件弹窗（每次登录必弹） -->
     <div class="letter-box" id="letterBox">
         <div class="letter-envelope" id="letterEnvelope">
             <div class="envelope-top">💌 2026年元旦 · 给小宝的信 💌</div>
@@ -409,13 +83,10 @@
             <div id="letterText"></div>
         </div>
     </div>
-
-    <!-- 3. 主计时界面 -->
     <div class="card" id="mainCard">
         <h1 class="couple-name">小浩<span>❤</span>小鱼！！！</h1>
         <p class="subtitle">2026元旦快乐 · 爱意永不打烊 🎆</p>
         <p class="time-tip">距离我们相识已经过了：</p>
-
         <div class="time-container">
             <div class="time-box"><span id="years">00</span><span>年</span></div>
             <div class="time-box"><span id="months">00</span><span>月</span></div>
@@ -424,29 +95,22 @@
             <div class="time-box"><span id="minutes">00</span><span>分</span></div>
             <div class="time-box"><span id="seconds">00</span><span>秒</span></div>
         </div>
-
         <div class="sweet-words">
             <p>💓 新的一年，继续牵着小宝的手，岁岁年年～</p>
             <p>💓 2026，我们的故事依旧甜蜜升温 📖</p>
         </div>
-
         <div class="photos">
             <div class="photo-item"><img src="https://picsum.photos/seed/love1/200/200" alt="合照1"></div>
             <div class="photo-item"><img src="https://picsum.photos/seed/love2/200/200" alt="合照2"></div>
             <div class="photo-item"><img src="https://picsum.photos/seed/love3/200/200" alt="合照3"></div>
         </div>
-
         <div class="footer">2026元旦限定 ❤ 爱你的每一天都是限量版</div>
     </div>
-
     <script>
-        // ========== ✅ 可自定义配置项（在这里修改你的信息，其他不用动） ==========
         const CONFIG = {
-            PASSWORD: "5201314",          // 你的专属密码
-            LOVE_START_DATE: new Date(2025, 3, 14), // 相识日期：年,月-1,日
-            // 背景音乐链接（替换成你喜欢的音乐，教程见下方）
+            PASSWORD: "5201314",
+            LOVE_START_DATE: new Date(2025, 3, 14),
             BG_MUSIC_URL: "https://music.163.com/song/media/outer/url?id=425570662.mp3",
-            // 2026元旦给小宝的信（直接修改内容即可，支持换行/表情）
             LETTER_CONTENT: `💌 致我最爱的小宝：
 
 2026年元旦快乐呀～🥳
@@ -456,21 +120,6 @@
 2025年，我们一起走过了春夏秋冬，分享了快乐，分担了烦恼；
 2026年，我会继续牵着你的手，陪你看遍世间美好，岁岁年年，永不分离。
 
-送给我宝贝的史诗级巨作
-现在是2025年12月2日20点17，我坐在工位上，开始了这份献给我宝宝的大作。你总说我不给你写小作文，而且前两次还是你开口让我写的，但是！这一次是我主动开始写的！
-
-我现在还在三山岛，昨天晚上刚刚哭完，感觉还有点丢人，毕竟你都没有和我哭过。
-  没有提前告诉你，想给你个惊喜，我上次说我写，你说不要了，那样的话我又要消失几个小时，这次我决定悄悄抽空来写，预计耗时两个月吧🤔，暂定，现在想着过年的时候发给你，作为新年礼物，也作为咱俩这一年的总结。不知道我能不能忍住不告诉你。
-上面都是闲话，序章，现在是20：25，唉嗨突然发现刚好是今年的年号，看来一切都是注定好的，注定我这个点来写这篇巨作。现在我给你发消息你没回我，也不知道你干嘛呢臭宝。🤔怎么又说了一句闲话，哈哈哈哈哈哈，不说了，希望宝宝你别嫌烦，我没有你辣么有文笔，感觉写出来有点想流水账，这一点多多原谅我。
-  突然感觉咱俩认识好久了，时间过得好快，咱俩3月14日加的微信，马上就快一年了。这一年咱俩有甜蜜有争吵有深度交流，当然也有吵架，不过当然还是以甜蜜为主调。我感觉我最大的感受就是感激，我很感激遇到你。你是个很好的宝宝，滴！好人卡。哈哈哈哈哈应该是好宝宝卡。你很愿意包容我，在我难过的时候安慰我。比如说昨天晚上，我给你打电话我还没说话呢，你就先说宝宝你别哭了～，安慰我了半天，还帮我不停的想理由。尊嘟很感激你，让我在这个人生地不熟的地方可以向你倾诉。你还想尽办法的给我准备惊喜，小白玩偶，还有给我寄到这里的爱心牛奶，看来你也悄悄记下来了我爱喝牛奶嘿嘿。还有给我写的小作文，我很喜欢叫小情书，尊嘟都给我看红眼了，一边哭哭一边擦一边看，看一半都看不清楚字了。我感觉我很幸福，让我这个不爱写东西的人都愿意开始写情书💌
-  今天是12月12日，下大雪啦，今天整体上来说还是比较开心的，上午我很顺利的投递了报销单，下午和宝宝进行了甜蜜通话哈哈哈哈，但是我结束的时候没有听出来宝宝的暗示，暗示我一起等外卖，但是我没有懂，因为当时正要挂电话，还得宝宝自闭了很久。在我退完快递后，自闭宝宝才给我打电话骂我哈哈哈哈，要不然你得继续生闷气，然后王浩还浑然不知，人家真的不知道嘛～不过最后还是说开了。
-  我还在雪地上画了吉伊宝宝还写了小浩爱小鱼，甚至还写了姐夫爱露露哈哈哈哈，不过今天最最开心的还是我收到了宝宝送给我的皇帝柑！真的超级好吃😋，是我以前从来没吃过的感觉，酸酸甜甜的非常清爽。爱你～
-又来啦，我感觉最近咱们两个的关系似乎又亲密了一点，虽然也会偶尔炒点小架，但是我们都会慢慢交流沟通，把事情说开了，咱们感情就又会更进一步，我觉得这就是你以前说的升级打怪吧，哪有小情侣不吵架呢是吧，但是让我最欣慰的还是咱俩都心里爱着对方，而且也都认为对方也爱着自己，这就叫大方向正确，咱们只要有这个大方向，就不会有解决不了的难题。你上次和我说你担心咱俩要是哪天吵架会不会分开，你很担心，我当时不知道怎么回答，但我现在认为这个就是答案-保持爱的大方向！
-  我感觉咱俩真的是一对很好的伴侣，时间不知不觉快过去一年了，咱俩的关系整体乘上升趋势，就像就像你上次深夜和我讲的哲学一样，一起食物的规律都是曲折上升的，我觉着咱俩的感情也是这样。我现在每天都感觉自己泡在粉色的泡泡里，非常开心非常幸福，我很感谢遇到你bb，爱你哦。
-  今天收到啦宝宝的奶茶，在三山岛的时候宝宝就说了要给我喝，今天果然就收到啦，还是以我意想不到的方式送达，就在咱俩甜蜜通话的时候，我还以为是商家要好评的电话呢，小宝为了留住我还专门拖延时间哈哈哈哈，用心啦宝宝，mua！
-  今天我有点不开心但是又是开心的，因为今天雪豹和婧宝对象一周在咱俩打电话的时候挑拨咱俩的关系，还翻我的丑照表情包，怎么说呢我有点不高兴一半是因为他们，一半是觉着小宝不帮着我。但是最让我感动的是，你感受到我的不高兴，我都感觉我藏的还不错，结果你还是可以察觉到我的小心思，依然决然的把我喊出来，然后用甜甜的特别温柔的声音安慰我，你今天尊嘟尊嘟超级温柔，我感觉甚至比上次我哭哭的时候还温柔。真的我当时想这辈子都是你啦，谢谢你宝宝，真超级好！
-  2026年开始啦，我相信今年一定是更加甜蜜的一年，今年我想我们会见面的，会更加更加的熟悉彼此，了解彼此，希望小宝不要焦虑不要有负担什么的，我爱你。我最开心的是和你聊咱俩的以后，包括结婚呀，工作呀，生活呀，我们无话不谈，包括小宝穿白丝给我看呀嘿嘿。
-  时间匆忙就到这里吧，但是只是信写到这里，并不是我们到这里，未来的幸福，正在等着我们两个一起来书写！
 小宝，你是我生命里最亮的星星，是我所有温柔的归宿。
 新的一年，愿我们：
 ✨ 平安喜乐，万事顺意
@@ -482,8 +131,6 @@
 永远爱你的小浩
 2026年1月1日 · 元旦`
         };
-
-        // ========== DOM元素获取 ==========
         const loginMask = document.getElementById('loginMask');
         const mainCard = document.getElementById('mainCard');
         const passwordInput = document.getElementById('passwordInput');
@@ -496,27 +143,18 @@
         const letterText = document.getElementById('letterText');
         const bgMusic = document.getElementById('bgMusic');
         const volumeControl = document.getElementById('volumeControl');
-
-        // ========== ✅ 背景音乐控制逻辑 ==========
         let isMuted = false;
-        // 初始化音乐链接
         bgMusic.src = CONFIG.BG_MUSIC_URL;
-        // 音量切换函数
+        bgMusic.volume = 0.4; // 音量调至适中，不吵不淡
         function toggleVolume() {
             isMuted = !isMuted;
             bgMusic.muted = isMuted;
             volumeControl.innerHTML = isMuted ? "🔇" : "🔊";
         }
-        // 登录后播放音乐并显示音量按钮
         function playBgMusicAfterLogin() {
-            bgMusic.play().catch(err => {
-                // 部分浏览器需要用户交互，这里容错
-                console.log("音乐播放需用户交互，已自动触发");
-            });
+            bgMusic.play().catch(err => console.log("音乐播放触发：", err));
             volumeControl.style.display = 'flex';
         }
-
-        // ========== ✅ 登录验证 - 强制每次登录必弹信件 ==========
         function verifyPassword() {
             const inputPwd = passwordInput.value.trim();
             if (inputPwd === CONFIG.PASSWORD) {
@@ -525,15 +163,13 @@
                 letterText.innerHTML = CONFIG.LETTER_CONTENT;
                 letterBox.style.display = 'block';
                 mainCard.style.display = 'none';
-                playBgMusicAfterLogin(); // 登录成功后播放音乐
+                playBgMusicAfterLogin();
             } else {
                 errorTip.style.display = 'block';
                 passwordInput.value = '';
                 setTimeout(() => errorTip.style.display = 'none', 2000);
             }
         }
-
-        // ========== ✅ 信件开合交互 ==========
         letterEnvelope.addEventListener('click', () => {
             letterEnvelope.style.display = 'none';
             letterContent.style.display = 'block';
@@ -542,8 +178,6 @@
             letterBox.style.display = 'none';
             mainCard.style.display = 'block';
         });
-
-        // ========== ✅ 相识计时逻辑 ==========
         function calculateLoveTime() {
             const now = new Date();
             const diff = now - CONFIG.LOVE_START_DATE;
@@ -551,7 +185,6 @@
             const totalMinutes = Math.floor(totalSeconds / 60);
             const totalHours = Math.floor(totalMinutes / 60);
             const totalDays = Math.floor(totalHours / 24);
-
             const years = Math.floor(totalDays / 365);
             const remainingDays = totalDays % 365;
             const months = Math.floor(remainingDays / 30);
@@ -559,7 +192,6 @@
             const hours = Math.floor(totalHours % 24);
             const minutes = Math.floor(totalMinutes % 60);
             const seconds = Math.floor(totalSeconds % 60);
-
             document.getElementById('years').textContent = years.toString().padStart(2, '0');
             document.getElementById('months').textContent = months.toString().padStart(2, '0');
             document.getElementById('days').textContent = days.toString().padStart(2, '0');
@@ -567,93 +199,49 @@
             document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
             document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
         }
-
-        // ========== ✅ 星空粒子动画（星星+爱心，适配手机） ==========
         class Particle {
             constructor(canvas, ctx) {
-                this.canvas = canvas;
-                this.ctx = ctx;
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = window.innerWidth < 768 ? Math.random() * 4 + 1 : Math.random() * 6 + 1;
-                this.speedX = (Math.random() - 0.5) * 0.4;
-                this.speedY = (Math.random() - 0.5) * 0.4;
-                this.isHeart = Math.random() > 0.7;
-                this.color = this.isHeart 
-                    ? `rgba(${248}, ${201}, ${255}, ${Math.random()*0.8+0.2})` 
-                    : `rgba(${255}, ${255}, ${255}, ${Math.random()*0.7+0.3})`;
+                this.canvas = canvas; this.ctx = ctx;
+                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+                this.size = window.innerWidth <768 ? Math.random()*4+1 : Math.random()*6+1;
+                this.speedX = (Math.random()-0.5)*0.4; this.speedY = (Math.random()-0.5)*0.4;
+                this.isHeart = Math.random()>0.7;
+                this.color = this.isHeart ? `rgba(248,201,255,${Math.random()*0.8+0.2})` : `rgba(255,255,255,${Math.random()*0.7+0.3})`;
             }
-            draw() {
-                this.ctx.fillStyle = this.color;
-                if (this.isHeart) {
-                    this.ctx.save();
-                    this.ctx.translate(this.x, this.y);
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(0,0);
-                    this.ctx.bezierCurveTo(this.size,-this.size/2,this.size*2,this.size/2,0,this.size*1.5);
-                    this.ctx.bezierCurveTo(-this.size*2,this.size/2,-this.size,-this.size/2,0,0);
-                    this.ctx.fill();
-                    this.ctx.restore();
-                } else {
-                    this.ctx.beginPath();
-                    for(let i=0;i<5;i++){
-                        this.ctx.lineTo(Math.cos((18+i*72)*Math.PI/180)*this.size+this.x,
-                                        Math.sin((18+i*72)*Math.PI/180)*this.size+this.y);
-                        this.ctx.lineTo(Math.cos((54+i*72)*Math.PI/180)*this.size/2+this.x,
-                                        Math.sin((54+i*72)*Math.PI/180)*this.size/2+this.y);
-                    }
-                    this.ctx.closePath();
-                    this.ctx.fill();
+            draw(){
+                this.ctx.fillStyle=this.color;
+                if(this.isHeart){
+                    this.ctx.save();this.ctx.translate(this.x,this.y);this.ctx.beginPath();
+                    this.ctx.moveTo(0,0);this.ctx.bezierCurveTo(this.size,-this.size/2,this.size*2,this.size/2,0,this.size*1.5);
+                    this.ctx.bezierCurveTo(-this.size*2,this.size/2,-this.size,-this.size/2,0,0);this.ctx.fill();this.ctx.restore();
+                }else{
+                    this.ctx.beginPath();for(let i=0;i<5;i++){
+                        this.ctx.lineTo(Math.cos((18+i*72)*Math.PI/180)*this.size+this.x,Math.sin((18+i*72)*Math.PI/180)*this.size+this.y);
+                        this.ctx.lineTo(Math.cos((54+i*72)*Math.PI/180)*this.size/2+this.x,Math.sin((54+i*72)*Math.PI/180)*this.size/2+this.y);
+                    }this.ctx.closePath();this.ctx.fill();
                 }
             }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if(this.x<0||this.x>this.canvas.width) this.x = Math.random()*this.canvas.width;
-                if(this.y<0||this.y>this.canvas.height) this.y = Math.random()*this.canvas.height;
+            update(){
+                this.x+=this.speedX;this.y+=this.speedY;
+                if(this.x<0||this.x>this.canvas.width)this.x=Math.random()*this.canvas.width;
+                if(this.y<0||this.y>this.canvas.height)this.y=Math.random()*this.canvas.height;
             }
         }
-        function initParticles() {
-            const canvas = document.getElementById('particleCanvas');
-            const ctx = canvas.getContext('2d');
-            function resize() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-            resize();
-            window.addEventListener('resize', resize);
-            const particleCount = window.innerWidth < 768 
-                ? Math.floor((canvas.width*canvas.height)/20000) 
-                : Math.floor((canvas.width*canvas.height)/12000);
-            const particles = [];
-            for(let i=0;i<particleCount;i++) particles.push(new Particle(canvas,ctx));
-            function animate() {
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                particles.forEach(p=>{p.update();p.draw();});
-                requestAnimationFrame(animate);
-            }
-            animate();
-            canvas.addEventListener('click', e=>{
-                for(let i=0;i<10;i++){
-                    const p = new Particle(canvas,ctx);
-                    p.x=e.clientX; p.y=e.clientY;
-                    p.speedX=(Math.random()-0.5)*1.5; p.speedY=(Math.random()-0.5)*1.5;
-                    particles.push(p);
-                }
+        function initParticles(){
+            const canvas=document.getElementById('particleCanvas'),ctx=canvas.getContext('2d');
+            function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+            resize();window.addEventListener('resize',resize);
+            const particleCount=window.innerWidth<768?Math.floor((canvas.width*canvas.height)/20000):Math.floor((canvas.width*canvas.height)/12000);
+            const particles=[];for(let i=0;i<particleCount;i++)particles.push(new Particle(canvas,ctx));
+            function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{p.update();p.draw();});requestAnimationFrame(animate);}
+            animate();canvas.addEventListener('click',e=>{
+                for(let i=0;i<10;i++){const p=new Particle(canvas,ctx);p.x=e.clientX;p.y=e.clientY;p.speedX=(Math.random()-0.5)*1.5;p.speedY=(Math.random()-0.5)*1.5;particles.push(p);}
             });
         }
-
-        // ========== ✅ 事件绑定+初始化 ==========
-        window.addEventListener('load', () => {
-            initParticles();
-            calculateLoveTime();
-            setInterval(calculateLoveTime, 1000);
-        });
-        loginBtn.addEventListener('click', verifyPassword);
-        passwordInput.addEventListener('keydown', e => {
-            if(e.key === 'Enter') verifyPassword();
-        });
-        volumeControl.addEventListener('click', toggleVolume); // 音量按钮点击事件
+        window.addEventListener('load',()=>{initParticles();calculateLoveTime();setInterval(calculateLoveTime,1000);});
+        loginBtn.addEventListener('click',verifyPassword);
+        passwordInput.addEventListener('keydown',e=>{if(e.key==='Enter')verifyPassword();});
+        volumeControl.addEventListener('click',toggleVolume);
     </script>
 </body>
 </html>
