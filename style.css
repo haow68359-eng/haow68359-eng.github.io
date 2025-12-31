@@ -1,0 +1,168 @@
+/* 全局样式：星空甜美元旦风 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Microsoft YaHei UI", "Comic Sans MS", 思源柔黑体, sans-serif;
+}
+/* 星空粒子画布：全屏底层 */
+#particleCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(160deg, #0f0829 0%, #291452 40%, #4b1b6b 70%, #7b2cb9 100%);
+}
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-x: hidden;
+    position: relative;
+}
+/* 线条小狗装饰：悬浮+发光 */
+.dog-decoration {
+    position: fixed;
+    z-index: 1;
+    width: 90px;
+    height: 90px;
+    opacity: 0.9;
+    filter: drop-shadow(0 0 8px #f8c9ff);
+    animation: floatDog 8 infinite ease-in-out;
+}
+.dog1 { top: 5%; left: 5%; animation-delay: 0; }
+.dog2 { bottom: 5%; right: 5%; animation-delay: 3; width: 70px; height:70px; }
+@keyframes floatDog {
+    0% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(6deg); }
+    100% { transform: translateY(0) rotate(0deg); }
+}
+
+/* ✅ 通用半透明毛玻璃样式（核心：无割裂感） */
+.transparent-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 220, 255, 0.3);
+    border-radius: 32px;
+    box-shadow: 0 8px 40px rgba(123, 44, 185, 0.2);
+}
+
+/* 1. 登录卡片样式 */
+.login-mask {
+    position: fixed;
+    top:0; left:0; width:100vw; height:100vh;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999;
+}
+.login-card {
+    @extend .transparent-card;
+    padding: 40px 30px;
+    width: 100%; max-width: 420px;
+    text-align: center;
+}
+.login-card h2 { color: #f8c9ff; font-size: 1.8rem; text-shadow: 0 0 10px #ff80f6; margin-bottom:10px; }
+.login-card p { color: #e0b3ff; font-size:1rem; margin-bottom:30px; }
+.password-input {
+    width:100%; padding:15px 20px; margin-bottom:20px;
+    background: rgba(255,255,255,0.12); border:1px solid rgba(255,220,255,0.5);
+    border-radius:20px; color:#fefaff; font-size:1.1rem; text-align:center;
+    outline: none;
+}
+.password-input:focus { border-color: #ff80f6; box-shadow:0 0 15px rgba(255,128,246,0.4); }
+.login-btn {
+    width:100%; padding:15px; border:none; border-radius:20px;
+    background: linear-gradient(180deg, #d870ff 0%, #a239ea 100%);
+    color:#fff; font-size:1.1rem; font-weight:bold; cursor:pointer;
+    box-shadow:0 6px 20px rgba(162,57,234,0.3); transition:0.3;
+}
+.login-btn:hover { transform:scale(1.05); box-shadow:0 8px 25px rgba(162,57,234,0.5); }
+.error-tip { color:#ff80f6; font-size:0.9rem; margin-top:15px; display:none; }
+
+/* 2. 元旦信件样式 + 飞入动画 */
+.letter-box {
+    position: fixed; top:50%; left:50%; transform: translate(-50%, -50%) scale(0) rotate(-10deg);
+    z-index: 9998; width:100%; max-width:600px; opacity:0;
+    animation: letterFlyIn 1 ease-out forwards 0.5;
+}
+@keyframes letterFlyIn {
+    0% { transform: translate(-50%, -150%) scale(0.5) rotate(-20deg); opacity:0; }
+    100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity:1; }
+}
+/* 信封样式 */
+.letter-envelope {
+    @extend .transparent-card;
+    padding: 40px 20px; cursor: pointer; text-align:center;
+}
+.envelope-top { color:#f8c9ff; font-size:1.5rem; font-weight:bold; text-shadow:0 0 10px #ff80f6; margin-bottom:15px; }
+.envelope-body { color:#e0b3ff; font-size:1.2rem; }
+/* 信件内容样式（打开后） */
+.letter-content {
+    @extend .transparent-card;
+    padding: 40px 30px; display:none;
+    color:#fefaff; line-height:2; font-size:1.15rem;
+    position: relative;
+}
+.letter-close {
+    position: absolute; top:20px; right:20px;
+    font-size:1.8rem; color:#f8c9ff; cursor:pointer;
+    width:30px; height:30px; line-height:30px; text-align:center;
+}
+#letterText { margin-top:10px; white-space: pre-line; }
+
+/* 3. 主计时卡片样式（半透明毛玻璃核心） */
+.card {
+    @extend .transparent-card;
+    padding:50px 20px; width:100%; max-width:700px;
+    text-align:center; z-index:2; display:none;
+}
+.couple-name {
+    color:#f8c9ff; font-size:3.2rem; letter-spacing:6px;
+    text-shadow:0 0 15px #ff80f6; margin-bottom:15px;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+}
+.couple-name span { animation: heartBeat 1.6 infinite ease-in-out; }
+@keyframes heartBeat { 0%{scale:1;} 50%{scale:1.2;} 100%{scale:1;} }
+.subtitle { color:#e0b3ff; font-size:1.2rem; margin-bottom:10px; }
+.time-tip { color:#d4b0ff; font-size:1.3rem; margin:20px 0; font-weight:500; }
+
+/* 计时框样式：半透明+发光 */
+.time-container { display:flex; justify-content:center; gap:18px; flex-wrap:wrap; margin:20px 0 30px; }
+.time-box {
+    width:90px; height:90px; border-radius:20px;
+    background: rgba(255,255,255,0.05); border:1px solid rgba(255,220,255,0.4);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:#f8c9ff; text-shadow:0 0 8px #ff80f6; transition:0.3;
+}
+.time-box:hover { transform:scale(1.1); box-shadow:0 0 20px rgba(255,128,246,0.4); }
+.time-box span:first-child { font-size:2rem; font-weight:bold; }
+.time-box span:last-child { font-size:0.9rem; margin-top:5px; }
+
+/* 语录/照片/底部样式 */
+.sweet-words {
+    @extend .transparent-card; padding:25px; margin:30px 0;
+    color:#d4b0ff; font-size:1.2rem; line-height:1.8;
+}
+.photos { display:flex; gap:15px; justify-content:center; flex-wrap:wrap; margin:30px 0; }
+.photo-item {
+    width:130px; height:130px; border-radius:16px; overflow:hidden;
+    border:2px solid rgba(255,220,255,0.5); transition:0.3;
+}
+.photo-item:hover { transform:scale(1.1); box-shadow:0 0 20px rgba(255,128,246,0.4); }
+.photo-item img { width:100%; height:100%; object-fit:cover; }
+.footer { color:#e0b3ff; font-size:1rem; margin-top:30px; }
+
+/* 手机适配 */
+@media (max-width:600px) {
+    .couple-name { font-size:2.2rem; letter-spacing:3px; }
+    .time-box { width:75px; height:75px; }
+    .time-box span:first-child { font-size:1.7rem; }
+    .letter-box { max-width:90%; }
+    .photo-item { width:110px; height:110px; }
+}
