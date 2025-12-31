@@ -6,18 +6,27 @@
     <title>2026元旦 ❤ 小浩&小鱼的甜蜜时光</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft YaHei UI", "Comic Sans MS", sans-serif; }
-        html, body { width: 100%; height: 100%; overflow-x: hidden; }
-        #particleCanvas { position: fixed; top:0; left:0; width:100vw; height:100vh; z-index:0; pointer-events:none; background: linear-gradient(160deg, #0f0829 0%, #291452 40%, #4b1b6b 70%, #7b2cb9 100%); }
-        body { display: flex; flex-direction: column; align-items: center; justify-content: center; padding:15px; position:relative; }
-        .dog-decoration { position:fixed; z-index:1; opacity:0.9; filter:drop-shadow(0 0 8px #f8c9ff); animation:floatDog 8s infinite ease-in-out; }
+        html, body { width: 100%; height: 100%; overflow-x: hidden; background: transparent; }
+        /* 粒子背景层 - 优先级修正，不遮挡任何内容 */
+        #particleCanvas { 
+            position: fixed; top:0; left:0; width:100vw; height:100vh; 
+            z-index:0; pointer-events:none; 
+            background: linear-gradient(160deg, #0f0829 0%, #291452 40%, #4b1b6b 70%, #7b2cb9 100%); 
+        }
+        body { display: flex; flex-direction: column; align-items: center; justify-content: center; padding:15px; position:relative; z-index:1; }
+        /* 线条小狗悬浮特效 */
+        .dog-decoration { position:fixed; z-index:2; opacity:0.9; filter:drop-shadow(0 0 8px #f8c9ff); animation:floatDog 8s infinite ease-in-out; }
         .dog1 { top:3%; left:3%; width:70px; height:70px; animation-delay:0s; }
         .dog2 { bottom:3%; right:3%; width:60px; height:60px; animation-delay:3s; }
         @keyframes floatDog { 0%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-15px) rotate(5deg);}100%{transform:translateY(0) rotate(0deg);} }
+        /* 音量按钮 */
         .volume-control { position:fixed; bottom:20px; left:20px; z-index:999; width:50px; height:50px; border-radius:50%; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(255,220,255,0.4); display:flex; align-items:center; justify-content:center; color:#f8c9ff; font-size:1.5rem; cursor:pointer; filter:drop-shadow(0 0 8px #ff80f6); transition:all 0.3s ease; display:none; }
         .volume-control:hover { transform:scale(1.1); background:rgba(255,255,255,0.15); }
         @media (max-width:600px) { .volume-control { width:40px; height:40px; font-size:1.2rem; bottom:15px; left:15px; } }
+        /* 通用磨砂玻璃样式 */
         .login-card, .letter-envelope, .letter-content, .card, .sweet-words { background:rgba(255,255,255,0.08); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); border:1px solid rgba(255,220,255,0.3); border-radius:32px; box-shadow:0 8px 40px rgba(123,44,185,0.2); }
-        .login-mask { position:fixed; top:0; left:0; width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; z-index:9999; }
+        /* 密码登录层 - 保证优先显示 */
+        .login-mask { position:fixed; top:0; left:0; width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; z-index:9999; background:rgba(15,8,41,0.8); }
         .login-card { padding:35px 25px; width:100%; max-width:400px; text-align:center; }
         .login-card h2 { color:#f8c9ff; font-size:1.6rem; text-shadow:0 0 10px #ff80f6; margin-bottom:10px; }
         .login-card p { color:#e0b3ff; font-size:0.95rem; margin-bottom:25px; }
@@ -26,48 +35,35 @@
         .login-btn { width:100%; padding:14px; background:linear-gradient(180deg, #d870ff 0%, #a239ea 100%); color:#fff; border:none; border-radius:20px; font-size:1rem; font-weight:bold; cursor:pointer; box-shadow:0 6px 20px rgba(162,57,234,0.3); transition:all 0.3s ease; }
         .login-btn:hover { transform:scale(1.05); box-shadow:0 8px 25px rgba(162,57,234,0.5); }
         .error-tip { color:#ff80f6; font-size:0.85rem; margin-top:15px; display:none; }
-        .letter-box { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0) rotate(-10deg); z-index:9998; width:100%; max-width:580px; opacity:0; animation:letterFlyIn 1.2s ease-out forwards 0.5s; display:none; }
-        @keyframes letterFlyIn { 0%{transform:translate(-50%,-150%) scale(0.5) rotate(-20deg);opacity:0;}100%{transform:translate(-50%,-50%) scale(1) rotate(0deg);opacity:1;} }
+        /* ✅ 信件盒子 - 定位修复，保证解锁后必显示 */
+        .letter-box { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:9998; width:100%; max-width:580px; opacity:1; display:none; }
         .letter-envelope { padding:35px 20px; cursor:pointer; text-align:center; }
         .envelope-top { color:#f8c9ff; font-size:1.3rem; font-weight:bold; text-shadow:0 0 10px #ff80f6; margin-bottom:12px; }
         .envelope-body { color:#e0b3ff; font-size:1.1rem; }
-        /* ✅ 核心修改：信件固定大小 + 垂直滚动条 + 滚动条美化 */
+        /* ✅ 核心：信件固定尺寸 + 粉色滚动条（完美版） */
         .letter-content { 
-            width: 580px;          /* 固定宽度 */
-            max-width: 90vw;      /* 手机端最大宽度（适配小屏） */
-            max-height: 70vh;     /* 固定最大高度（视口高度70%，不超出屏幕） */
-            padding:35px 25px; 
-            display:none; 
-            color:#fefaff; 
-            line-height:2; 
-            font-size:1.05rem; 
-            position:relative; 
-            overflow-y: auto;     /* 垂直滚动条（内容超出时显示） */
-            overflow-x: hidden;   /* 禁止横向滚动 */
+            width: 580px;
+            max-width: 90vw;
+            height: 70vh;      /* 固定高度，不再变化 */
+            padding: 35px 25px;
+            display: none;
+            color: #fefaff;
+            line-height: 2;
+            font-size: 1.05rem;
+            position: relative;
+            overflow-y: auto;   /* 垂直滚动条必显 */
+            overflow-x: hidden; /* 禁止横向滚动 */
         }
-        /* ✅ 滚动条美化 - 适配Chrome/Safari */
-        .letter-content::-webkit-scrollbar {
-            width: 8px;           /* 滚动条宽度 */
-        }
-        .letter-content::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.05); /* 滚动条轨道背景 */
-            border-radius: 4px;
-        }
-        .letter-content::-webkit-scrollbar-thumb {
-            background: rgba(248,201,255,0.5); /* 滚动条滑块颜色 */
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-        .letter-content::-webkit-scrollbar-thumb:hover {
-            background: rgba(248,201,255,0.8); /* 滑块hover颜色变深 */
-        }
-        /* ✅ 滚动条美化 - 适配Firefox */
-        .letter-content {
-            scrollbar-width: thin; /* 滚动条宽度：细 */
-            scrollbar-color: rgba(248,201,255,0.5) rgba(255,255,255,0.05); /* 滑块颜色 轨道颜色 */
-        }
+        /* ✅ 粉色滚动条美化 - 全浏览器适配 */
+        .letter-content::-webkit-scrollbar { width: 9px; }
+        .letter-content::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 5px; }
+        .letter-content::-webkit-scrollbar-thumb { background: rgba(248,201,255,0.6); border-radius: 5px; }
+        .letter-content::-webkit-scrollbar-thumb:hover { background: rgba(255,128,246,0.8); }
+        .letter-content { scrollbar-width: thin; scrollbar-color: rgba(248,201,255,0.6) rgba(255,255,255,0.05); }
+        /* 信件关闭按钮 */
         .letter-close { position:absolute; top:18px; right:18px; font-size:1.6rem; color:#f8c9ff; cursor:pointer; width:28px; height:28px; line-height:28px; text-align:center; z-index: 10; }
         #letterText { margin-top:8px; white-space:pre-line; }
+        /* 主卡片 */
         .card { padding:40px 15px; width:100%; max-width:680px; text-align:center; z-index:2; display:none; }
         .couple-name { color:#f8c9ff; font-size:clamp(1.8rem,8vw,3rem); letter-spacing:4px; text-shadow:0 0 15px #ff80f6; margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:8px; }
         .couple-name span { animation:heartBeat 1.6s infinite ease-in-out; }
@@ -91,21 +87,24 @@
 </head>
 <body>
     <canvas id="particleCanvas"></canvas>
+    <!-- ✅ 修复：完整闭合音频标签，音乐正常加载 -->
     <audio id="bgMusic" loop preload="auto">
         <source src="https://music.163.com/song/media/outer/url?id=425570662.mp3" type="audio/mpeg">
-    
+    </audio>
     <div class="volume-control" id="volumeControl">🔊</div>
     <img src="https://picsum.photos/seed/starDog1/200/200" alt="线条小狗" class="dog-decoration dog1">
     <img src="https://picsum.photos/seed/starDog2/200/200" alt="线条小狗" class="dog-decoration dog2">
+    <!-- 密码登录界面 -->
     <div class="login-mask" id="loginMask">
         <div class="login-card">
             <h2>🔐 2026元旦专属入口</h2>
             <p>输入密码解锁写给小宝的信～✨</p>
-            <input type="password" class="password-input" id="passwordInput" placeholder="请输入密码">
+            <input type="password" class="password-input" id="passwordInput" placeholder="请输入专属密码">
             <button class="login-btn" id="loginBtn">解锁甜蜜时光 💌</button>
             <div class="error-tip" id="errorTip">密码错误啦～再试试❤️</div>
         </div>
     </div>
+    <!-- 情书信封盒子 -->
     <div class="letter-box" id="letterBox">
         <div class="letter-envelope" id="letterEnvelope">
             <div class="envelope-top">💌 2026年元旦 · 给小宝的信 💌</div>
@@ -116,6 +115,7 @@
             <div id="letterText"></div>
         </div>
     </div>
+    <!-- 主祝福卡片 -->
     <div class="card" id="mainCard">
         <h1 class="couple-name">小浩<span>❤</span>小鱼！！！</h1>
         <p class="subtitle">2026元旦快乐 · 爱意永不打烊 🎆</p>
@@ -139,10 +139,11 @@
         </div>
         <div class="footer">2026元旦限定 ❤ 爱你的每一天都是限量版</div>
     </div>
+
     <script>
         const CONFIG = {
             PASSWORD: "5201314",
-            LOVE_START_DATE: new Date(2025, 2, 14), // ✅ 3月14日（月份0开始）
+            LOVE_START_DATE: new Date(2025, 2, 14), // 3月14日（月份从0开始）
             BG_MUSIC_URL: "https://music.163.com/song/media/outer/url?id=425570662.mp3",
             LETTER_CONTENT: `💌 致我最爱的小宝：
 
@@ -192,6 +193,8 @@
 永远爱你的小浩
 2026年1月1日 · 元旦`
         };
+
+        // 获取所有DOM元素
         const loginMask = document.getElementById('loginMask');
         const mainCard = document.getElementById('mainCard');
         const passwordInput = document.getElementById('passwordInput');
@@ -204,19 +207,23 @@
         const letterText = document.getElementById('letterText');
         const bgMusic = document.getElementById('bgMusic');
         const volumeControl = document.getElementById('volumeControl');
+        
         let isMuted = false;
         bgMusic.src = CONFIG.BG_MUSIC_URL;
-        bgMusic.volume = 0.4;
+        bgMusic.volume = 0.4; // 适中音量
 
+        // 音量切换
         function toggleVolume() {
             isMuted = !isMuted;
             bgMusic.muted = isMuted;
             volumeControl.innerHTML = isMuted ? "🔇" : "🔊";
         }
+        // 解锁后播放音乐
         function playBgMusicAfterLogin() {
-            bgMusic.play().catch(err => console.log("音乐播放触发：", err));
+            bgMusic.play().catch(err => console.log("音乐播放：", err));
             volumeControl.style.display = 'flex';
         }
+        // 密码验证逻辑
         function verifyPassword() {
             const inputPwd = passwordInput.value.trim();
             if (inputPwd === CONFIG.PASSWORD) {
@@ -232,14 +239,17 @@
                 setTimeout(() => errorTip.style.display = 'none', 2000);
             }
         }
+        // 拆开信封
         letterEnvelope.addEventListener('click', () => {
             letterEnvelope.style.display = 'none';
             letterContent.style.display = 'block';
         });
+        // 关闭信件，显示主卡片
         letterClose.addEventListener('click', () => {
             letterBox.style.display = 'none';
             mainCard.style.display = 'block';
         });
+        // 计算相恋时长
         function calculateLoveTime() {
             const now = new Date();
             const diff = now - CONFIG.LOVE_START_DATE;
@@ -254,6 +264,7 @@
             const hours = Math.floor(totalHours % 24);
             const minutes = Math.floor(totalMinutes % 60);
             const seconds = Math.floor(totalSeconds % 60);
+            
             document.getElementById('years').textContent = years.toString().padStart(2, '0');
             document.getElementById('months').textContent = months.toString().padStart(2, '0');
             document.getElementById('days').textContent = days.toString().padStart(2, '0');
@@ -261,6 +272,7 @@
             document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
             document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
         }
+        // 粒子爱心背景
         class Particle {
             constructor(canvas, ctx) {
                 this.canvas = canvas; this.ctx = ctx;
@@ -300,7 +312,13 @@
                 for(let i=0;i<10;i++){const p=new Particle(canvas,ctx);p.x=e.clientX;p.y=e.clientY;p.speedX=(Math.random()-0.5)*1.5;p.speedY=(Math.random()-0.5)*1.5;particles.push(p);}
             });
         }
-        window.addEventListener('load',()=>{initParticles();calculateLoveTime();setInterval(calculateLoveTime,1000);});
+        // 页面加载完成初始化
+        window.addEventListener('load',()=>{
+            initParticles();
+            calculateLoveTime();
+            setInterval(calculateLoveTime,1000);
+        });
+        // 绑定事件
         loginBtn.addEventListener('click',verifyPassword);
         passwordInput.addEventListener('keydown',e=>{if(e.key==='Enter')verifyPassword();});
         volumeControl.addEventListener('click',toggleVolume);
